@@ -1,5 +1,5 @@
-import { Controller, Get, HttpStatus, Res, Post, Body, Param, Put, Delete } from '@nestjs/common';
-import { Response, } from 'express';
+import { Controller, Get, HttpStatus, Res, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
+import { query, Response, } from 'express';
 import { Categorias } from 'src/entities/category.entity';
 import { CreateCategoryValidator } from 'src/validators/create-category-validator';
 import { UpdateCategoryValidator } from 'src/validators/update-category-validator';
@@ -13,8 +13,8 @@ export class CategoryController {
   ){}
 
   @Get()
-  public async getCategories(@Res() res: Response){
-    const categories = await this.categoryService.find();
+  public async getCategories(@Query() query, @Res() res: Response){
+    const categories = await this.categoryService.find(query.text);
     return res.status(HttpStatus.OK).json({
       ok: true,
       categories

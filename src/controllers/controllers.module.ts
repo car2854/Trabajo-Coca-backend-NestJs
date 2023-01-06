@@ -21,8 +21,14 @@ export class ControllersModule implements NestModule{
       .apply(ValidateTokenMiddleware)
       .forRoutes(
         {path: 'auth/renew', method: RequestMethod.GET},
+
+        {path: 'user', method: RequestMethod.POST},
+        {path: 'user', method: RequestMethod.GET},
+        {path: 'user/updatePasswordUser/*', method: RequestMethod.PUT},
+        {path: 'user/*', method: RequestMethod.DELETE},
+        {path: 'user/permissions', method: RequestMethod.GET},
+        
         CategoryController,
-        UserController,
         UnitMeasurementController,
         FinishedProductController,
         WareHouseController

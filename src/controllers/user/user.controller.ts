@@ -1,11 +1,12 @@
-import { Controller, Post, Res, Body, HttpStatus, Get, Put, Delete, Param, Req } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Controller, Post, Res, Body, HttpStatus, Get, Put, Delete, Param, Req, Query } from '@nestjs/common';
+import { query, Request, Response } from 'express';
 import { Users } from 'src/entities/users.entity';
 import { CreateUserValidator } from 'src/validators/create-user-validator';
 import { UserService } from './user.service';
 
 import * as bcrypt from 'bcrypt';
 import { UpdatePasswordValidator } from 'src/validators/update-password-validator';
+import { permissions } from 'src/helpers/permissions';
 
 @Controller('user')
 export class UserController {
@@ -14,7 +15,7 @@ export class UserController {
   ){}
 
   @Post('admin')
-  public async createUser (@Body() body: CreateUserValidator, @Res() res: Response) {
+  public async createUserAdmin (@Body() body: CreateUserValidator, @Res() res: Response) {
     const users = await this.userService.find();
     if (users.length > 0){
       return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -36,9 +37,32 @@ export class UserController {
     });
   }
 
+  @Post('')
+  public async createUser (@Body() body: CreateUserValidator, @Res() res: Response) {
+    const user = await this.userService.findOneByEmail(body.email);
+    if (user){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        ok: false,
+        msg: 'ya existe un usuario con ese email'
+      });
+    }
+    const salt = bcrypt.genSaltSync();
+    const newPassword = bcrypt.hashSync(body.password, salt);
+    const admin = new Users();
+    admin.email = body.email;
+    admin.password = newPassword;
+    admin.nombre = body.nombre;
+    admin.permisos = 'admin';
+    const newAdmin = await this.userService.save(admin);
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      newAdmin
+    });
+  }
+
   @Get()
-  public async getUsers(@Res() res: Response){
-    const users = await this.userService.find();
+  public async getUsers(@Query() query, @Res() res: Response){
+    const users = await this.userService.find(query.text);
     return res.status(HttpStatus.OK).json({
       ok: true,
       users
@@ -81,6 +105,14 @@ export class UserController {
     return res.status(HttpStatus.OK).json({
       ok: true,
       user
+    });
+  }
+
+  @Get('permissions')
+  public async getPermissions(@Res() res:Response){
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      permissions
     });
   }
 }

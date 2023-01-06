@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Users } from 'src/entities/users.entity';
 
 @Injectable()
@@ -15,8 +15,13 @@ export class UserService {
     return this.usersRepository.findOne({where: {email, is_active: true}});
   }
 
-  public find = () => {
-    return this.usersRepository.find({where: {is_active: true}});
+  public find = (query:string = '') => {
+    return this.usersRepository.find({
+      where: [
+        {is_active: true, nombre: ILike(`%${query}%`)},
+        {is_active: true, email: ILike(`%${query}%`)},
+      ]
+    });
   }
 
   public findById = (id) => {

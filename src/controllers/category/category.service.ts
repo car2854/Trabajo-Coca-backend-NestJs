@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Categorias } from 'src/entities/category.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class CategoryService {
@@ -11,8 +11,13 @@ export class CategoryService {
     private categoryRepository: Repository<Categorias>
   ){}
 
-  public find = () => {
-    return this.categoryRepository.find({where:{is_active: true}});
+  public find = (query:string = '') => {
+    return this.categoryRepository.find({
+      where:[
+        {is_active: true, nombre: ILike(`%${query}%`)},
+        {is_active: true, sabor: ILike(`%${query}%`)},
+      ]
+    });
   }
   
   public findById = (id:number) => {
