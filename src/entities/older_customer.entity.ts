@@ -18,6 +18,9 @@ export class ClientesMayores{
   @Column({nullable: true})
   empresa: string
 
+  @Column()
+  telefono_celular: string;
+
   @Column({default: true})
   is_active: boolean
 }

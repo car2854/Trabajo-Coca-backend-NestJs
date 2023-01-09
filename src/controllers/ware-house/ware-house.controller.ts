@@ -21,15 +21,19 @@ export class WareHouseController {
   }
 
   @Get('getProductWare/:id')
-  public async getProductByWareHoues(@Param() param, @Res() res: Response){
-    const wareHouse = await this.wareHouseService.findOne(parseInt(param.id || '0'));
+  public async getProductByWareHoues(@Query() query,@Param() param, @Res() res: Response){
+    const wareHouse = await this.wareHouseService
+      .findOneById(
+        parseInt(param.id || '0'), 
+      );
+
     if (!wareHouse){
       return res.status(HttpStatus.NOT_FOUND).json({
         ok: false,
         msg: 'No existe ese almacen'
       })
     }
-    const contains = await this.wareHouseService.findContain(wareHouse);
+    const contains = await this.wareHouseService.findContain(wareHouse, parseInt(query.category_id || '0'));
     return res.status(HttpStatus.OK).json({
       ok: true,
       contains

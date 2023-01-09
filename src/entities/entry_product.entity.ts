@@ -11,7 +11,7 @@ export class IngresosProductos{
   @Column()
   cantidad: number;
 
-  @ManyToOne(() => Ingresos, (Ingresos) => Ingresos.id, { cascade: true })
+  @ManyToOne(() => Ingresos, (Ingresos) => Ingresos.ingresos_productos, { cascade: true })
   @JoinColumn({ name: 'ingreso_id' })
   ingreso: Ingresos;
 

@@ -7,11 +7,12 @@ import { UserService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { UpdatePasswordValidator } from 'src/validators/update-password-validator';
 import { permissions } from 'src/helpers/permissions';
+import { CreateUserNoAdminValidator } from 'src/validators/create-user-no-admin-validator';
 
 @Controller('user')
 export class UserController {
   constructor(
-    private userService: UserService
+    private userService: UserService,
   ){}
 
   @Post('admin')
@@ -38,7 +39,8 @@ export class UserController {
   }
 
   @Post('')
-  public async createUser (@Body() body: CreateUserValidator, @Res() res: Response) {
+  public async createUser (@Body() body: CreateUserNoAdminValidator, @Res() res: Response) {
+
     const user = await this.userService.findOneByEmail(body.email);
     if (user){
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -52,7 +54,7 @@ export class UserController {
     admin.email = body.email;
     admin.password = newPassword;
     admin.nombre = body.nombre;
-    admin.permisos = 'admin';
+    admin.permisos = body.permisos;
     const newAdmin = await this.userService.save(admin);
     return res.status(HttpStatus.OK).json({
       ok: true,
@@ -63,6 +65,15 @@ export class UserController {
   @Get()
   public async getUsers(@Query() query, @Res() res: Response){
     const users = await this.userService.find(query.text);
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      users
+    });
+  }
+
+  @Get('getUserExecutives')
+  public async getUsersExecutives(@Query() query, @Res() res: Response){
+    const users = await this.userService.getUserExecutive(query.text);
     return res.status(HttpStatus.OK).json({
       ok: true,
       users

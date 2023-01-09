@@ -30,7 +30,7 @@ export class WareHouseService {
     });
   }
 
-  public findOne = (id:number) => {
+  public findOneById = (id:number) => {
     return this.wareHouseRepository.findOne({where: {id, is_active: true}});
   }
   
@@ -42,8 +42,39 @@ export class WareHouseService {
     return this.wareHouseRepository.save(wareHouse);
   }
 
-  public findContain = (wareHouse:Almacenes) => {
-    return this.containsRepository.find({where: {almacen_id: wareHouse}, relations: ['productos_terminados_codigo']});
+  public findContain = (wareHouse:Almacenes, id_category:number = -1) => {
+    if (id_category > 0){
+      return this.containsRepository.find({
+        where: {
+          almacen: wareHouse,
+          producto_terminado: {
+            categoria: {
+              id: id_category
+            }
+          }
+        }, 
+        relations: {
+          producto_terminado: {
+            categoria: true,
+            unidad_medida: true
+          },
+        },
+        
+      });
+    }
+
+    return this.containsRepository.find({
+      where: {
+        almacen: wareHouse,
+      }, 
+      relations: {
+        producto_terminado: {
+          categoria: true,
+          unidad_medida: true
+        },
+      },
+      
+    });
   }
 
   public update = () => {

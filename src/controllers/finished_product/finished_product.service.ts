@@ -21,6 +21,10 @@ export class FinishedProductService {
     });
   }
 
+  public findByCod = (cod:string) => {
+    return this.finishedProductRepository.findOne({where: {codigo: cod, is_active: true}});
+  }
+
   public save = (finishedProduct: ProductosTerminados) => {
     return this.finishedProductRepository.save(finishedProduct);
   }

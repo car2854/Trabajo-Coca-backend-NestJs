@@ -19,9 +19,9 @@ export class Contienen{
   
   @ManyToOne(() => Almacenes, (Almacenes) => Almacenes.contienen, {cascade: true})
   @JoinColumn({name: 'almacen_id'})
-  almacen_id: Almacenes;
+  almacen: Almacenes;
 
   @ManyToOne(() => ProductosTerminados, (ProductosTerminados) => ProductosTerminados.contienen, {cascade: true})
   @JoinColumn({name: 'producto_terminado_codigo'})
-  productos_terminados_codigo: ProductosTerminados
+  producto_terminado: ProductosTerminados
 }

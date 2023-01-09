@@ -8,7 +8,7 @@ export class UserService {
 
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>
+    private usersRepository: Repository<Users>, 
   ){}
 
   public findOneByEmail = (email:string) => {
@@ -38,5 +38,22 @@ export class UserService {
 
   public delete = (id:number) => {
     return this.usersRepository.update(id, {is_active: false});
+  }
+  
+  public getUserExecutive = (text:string = '') => {
+    return this.usersRepository.find({where: 
+      [
+        {
+          permisos: ILike('%userMobileEfecutivo%'), 
+          is_active: true,
+          nombre: ILike(`%${text}%`)
+        },
+        {
+          permisos: ILike('%userMobileEfecutivo%'), 
+          is_active: true,
+          email: ILike(`%${text}%`)
+        },
+      ]
+    });
   }
 }

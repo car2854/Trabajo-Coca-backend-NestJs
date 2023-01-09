@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { HistorialContabilidad } from './entities/accounting_history.entity';
 import { VentasAnuladas } from './entities/canceled_sale.entity';
 import { Categorias } from './entities/category.entity';
-import { TelefonosCelulares } from './entities/cell_phone.entit';
 import { Contienen } from './entities/contain.entity';
 import { DetalleNoAlmacen } from './entities/detail_no_ware_house.entity';
 import { DetallesPedidos } from './entities/detail_order.entity';
@@ -50,7 +49,6 @@ import { ControllersModule } from './controllers/controllers.module';
         IngresosProductos,
         Contienen,
         ClientesMayores,
-        TelefonosCelulares,
         Ventas,
         DetalleNoAlmacen,
         VentasProductos,
@@ -75,7 +73,6 @@ import { ControllersModule } from './controllers/controllers.module';
       IngresosProductos,
       Contienen,
       ClientesMayores,
-      TelefonosCelulares,
       Ventas,
       DetalleNoAlmacen,
       VentasProductos,

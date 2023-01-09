@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { IngresosProductos } from './entry_product.entity';
 import { Almacenes } from './ware_house.entity';
 
 @Entity()
@@ -13,7 +14,10 @@ export class Ingresos{
   @Column({type: 'text'})
   nota: string;
 
-  @ManyToOne(() => Almacenes, (Almacenes) => Almacenes.id, { cascade: true })
+  @ManyToOne(() => Almacenes, (Almacenes) => Almacenes.ingresos, { cascade: true })
   @JoinColumn({ name: 'almacen_id' })
   almacen: Almacenes;
+
+  @OneToMany(() => IngresosProductos, (IngresosProductos) => IngresosProductos.ingreso)
+  ingresos_productos: IngresosProductos[]
 } 

@@ -25,6 +25,6 @@ export class ProductosTerminados{
   @JoinColumn({ name: 'categoria_id' })
   categoria: Categorias;
 
-  @OneToMany(() => Contienen, (Contienen) => Contienen.productos_terminados_codigo)
+  @OneToMany(() => Contienen, (Contienen) => Contienen.producto_terminado)
   contienen: Contienen[]
 }

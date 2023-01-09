@@ -11,9 +11,15 @@ import { UnitMeasurementModule } from './unit-measurement/unit-measurement.modul
 import { UnitMeasurementController } from './unit-measurement/unit-measurement.controller';
 import { FinishedProductController } from './finished_product/finished_product.controller';
 import { WareHouseController } from './ware-house/ware-house.controller';
+import { OlderCustomerModule } from './older-customer/older-customer.module';
+import { MinorCustomerModule } from './minor-customer/minor-customer.module';
+import { MinorCustomerController } from './minor-customer/minor-customer.controller';
+import { OlderCustomerController } from './older-customer/older-customer.controller';
+import { IngressModule } from './ingress/ingress.module';
+import { IngressController } from './ingress/ingress.controller';
 
 @Module({
-  imports: [AuthModule, UserModule, WareHouseModule, CategoryModule, FinishedProductModule, UnitMeasurementModule]
+  imports: [AuthModule, UserModule, WareHouseModule, CategoryModule, FinishedProductModule, UnitMeasurementModule, OlderCustomerModule, MinorCustomerModule, IngressModule]
 })
 export class ControllersModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
@@ -26,12 +32,16 @@ export class ControllersModule implements NestModule{
         {path: 'user', method: RequestMethod.GET},
         {path: 'user/updatePasswordUser/*', method: RequestMethod.PUT},
         {path: 'user/*', method: RequestMethod.DELETE},
+        {path: 'user/*', method: RequestMethod.GET},
         {path: 'user/permissions', method: RequestMethod.GET},
         
         CategoryController,
         UnitMeasurementController,
         FinishedProductController,
-        WareHouseController
+        WareHouseController,
+        MinorCustomerController,
+        OlderCustomerController,
+        IngressController
       )
   }
 
