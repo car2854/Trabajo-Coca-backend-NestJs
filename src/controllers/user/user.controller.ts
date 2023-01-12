@@ -71,6 +71,25 @@ export class UserController {
     });
   }
 
+  @Get(':id')
+  public async getUser(@Param() param,@Res() res: Response){
+    
+    const user = await this.userService.findById(param.id);
+
+    if (!user){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese usuario'
+      });
+    }
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      user
+    });
+
+  } 
+
   @Get('getUserExecutives')
   public async getUsersExecutives(@Query() query, @Res() res: Response){
     const users = await this.userService.getUserExecutive(query.text);

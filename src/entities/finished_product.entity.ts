@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Categorias } from './category.entity';
 import { Contienen } from './contain.entity';
+import { Disposicion } from './disposition.entity';
 import { UnidadDeMedida } from './unit_of_measuremet.entity';
 
 @Entity()
@@ -26,5 +27,8 @@ export class ProductosTerminados{
   categoria: Categorias;
 
   @OneToMany(() => Contienen, (Contienen) => Contienen.producto_terminado)
-  contienen: Contienen[]
+  contienen: Contienen[];
+
+  @OneToMany(() => Disposicion, (Disposicion) => Disposicion.productos_terminado)
+  disposiciones: Disposicion[]
 }

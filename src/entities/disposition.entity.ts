@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { HistorialDisposicion } from './disposition_history.entity';
 import { ProductosTerminados } from './finished_product.entity';
 import { Users } from './users.entity';
 
@@ -10,11 +11,14 @@ export class Disposicion{
   @Column()
   cantidad: number
   
-  @ManyToOne(() => (Users), (Users) => Users.id, {cascade: true})
+  @ManyToOne(() => (Users), (Users) => Users.disposiciones, {cascade: true})
   @JoinColumn({name: 'user_id'})
   user_id: Users;
 
-  @ManyToOne(() => (ProductosTerminados), (ProductosTerminados) => ProductosTerminados.codigo, {cascade: true})
+  @ManyToOne(() => ProductosTerminados, (ProductosTerminados) => ProductosTerminados.disposiciones, {cascade: true})
   @JoinColumn({name: 'producto_terminado_id'})
-  producto_terminado_id: ProductosTerminados;
+  productos_terminado: ProductosTerminados;
+
+  @OneToMany(() => HistorialDisposicion, (HistorialDisposicion) => HistorialDisposicion.disposicion_id)
+  historial_disposiciones: HistorialDisposicion[]
 }

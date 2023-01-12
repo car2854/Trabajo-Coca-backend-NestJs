@@ -25,7 +25,9 @@ export class UserService {
   }
 
   public findById = (id) => {
-    return this.usersRepository.find({where: {is_active: true, id}});
+    return this.usersRepository.findOne({
+      where: {is_active: true, id},
+    });
   }
 
   public save = (admin: Users) => {

@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Disposicion } from './disposition.entity';
 
 @Entity()
 export class Users{
@@ -18,5 +19,8 @@ export class Users{
   permisos: string;
 
   @Column({default: true})
-  is_active: boolean
+  is_active: boolean;
+
+  @OneToMany(() => Disposicion, (Disposicion) => Disposicion.user_id)
+  disposiciones: Disposicion[]
 }
