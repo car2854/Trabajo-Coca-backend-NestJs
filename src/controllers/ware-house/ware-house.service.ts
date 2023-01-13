@@ -37,17 +37,14 @@ export class WareHouseService {
   public findFather = () => {
     return this.wareHouseRepository.findOne({where: {is_active: true, es_almacen_padre: true}});
   }
-
-  public save = (wareHouse: Almacenes) => {
-    return this.wareHouseRepository.save(wareHouse);
-  }
-
-  public findContain = (wareHouse:Almacenes, id_category:number = -1) => {
+  
+  public findContain = (wareHouse:Almacenes, id_category:number = -1, name:string = '') => {
     if (id_category > 0){
       return this.containsRepository.find({
         where: {
           almacen: wareHouse,
           producto_terminado: {
+            nombre: ILike(`%${name}%`),
             categoria: {
               id: id_category
             }
@@ -56,7 +53,7 @@ export class WareHouseService {
         relations: {
           producto_terminado: {
             categoria: true,
-            unidad_medida: true
+            unidad_medida: true,
           },
         },
         
@@ -66,6 +63,9 @@ export class WareHouseService {
     return this.containsRepository.find({
       where: {
         almacen: wareHouse,
+        producto_terminado: {
+          nombre: ILike(`%${name}%`),
+        }
       }, 
       relations: {
         producto_terminado: {
@@ -76,7 +76,17 @@ export class WareHouseService {
       
     });
   }
+  
+  public save = (wareHouse: Almacenes) => {
+    return this.wareHouseRepository.save(wareHouse);
+  }
 
-  public update = () => {
+
+  public update = (id:number, data:any) => {
+    return this.wareHouseRepository.update(id,data);
+  }
+
+  public delete = (id:number) => {
+    return this.wareHouseRepository.update(id, {is_active: false});
   }
 }
