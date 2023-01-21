@@ -14,31 +14,49 @@ export class UserController {
   constructor(
     private userService: UserService,
   ){}
-
-  @Post('admin')
-  public async createUserAdmin (@Body() body: CreateUserValidator, @Res() res: Response) {
-    const users = await this.userService.find();
-    if (users.length > 0){
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        ok: false,
-        msg: 'Ya existen usuarios creados'
-      });
-    }
-    const salt = bcrypt.genSaltSync();
-    const newPassword = bcrypt.hashSync(body.password, salt);
-    const admin = new Users();
-    admin.email = body.email;
-    admin.password = newPassword;
-    admin.nombre = body.nombre;
-    admin.permisos = 'admin';
-    const newAdmin = await this.userService.save(admin);
+  
+  @Get()
+  public async getUsers(@Query() query, @Res() res: Response){
+    const users = await this.userService.find(query.text);
     return res.status(HttpStatus.OK).json({
       ok: true,
-      newAdmin
+      users
     });
   }
 
-  @Post('')
+  @Get('getUserExecutives')
+  public async getUsersExecutives(@Query() query, @Res() res: Response){
+    const users = await this.userService.getUserExecutive(query.text);
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      users
+    });
+  }
+
+  @Get('permissions')
+  public async getPermissions(@Res() res:Response){
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      permissions
+    });
+  }
+
+  @Get(':id')
+  public async getUser(@Param() param,@Res() res: Response){
+    const user = await this.userService.findById(param.id);
+    if (!user){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese usuario'
+      });
+    }
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      user
+    });
+  }
+
+  @Post()
   public async createUser (@Body() body: CreateUserNoAdminValidator, @Res() res: Response) {
 
     const user = await this.userService.findOneByEmail(body.email);
@@ -62,40 +80,26 @@ export class UserController {
     });
   }
 
-  @Get()
-  public async getUsers(@Query() query, @Res() res: Response){
-    const users = await this.userService.find(query.text);
-    return res.status(HttpStatus.OK).json({
-      ok: true,
-      users
-    });
-  }
-
-  @Get(':id')
-  public async getUser(@Param() param,@Res() res: Response){
-    
-    const user = await this.userService.findById(param.id);
-
-    if (!user){
-      return res.status(HttpStatus.NOT_FOUND).json({
+  @Post('admin')
+  public async createUserAdmin (@Body() body: CreateUserValidator, @Res() res: Response) {
+    const users = await this.userService.find();
+    if (users.length > 0){
+      return res.status(HttpStatus.UNAUTHORIZED).json({
         ok: false,
-        msg: 'No existe ese usuario'
+        msg: 'Ya existen usuarios creados'
       });
     }
-
+    const salt = bcrypt.genSaltSync();
+    const newPassword = bcrypt.hashSync(body.password, salt);
+    const admin = new Users();
+    admin.email = body.email;
+    admin.password = newPassword;
+    admin.nombre = body.nombre;
+    admin.permisos = 'admin';
+    const newAdmin = await this.userService.save(admin);
     return res.status(HttpStatus.OK).json({
       ok: true,
-      user
-    });
-
-  } 
-
-  @Get('getUserExecutives')
-  public async getUsersExecutives(@Query() query, @Res() res: Response){
-    const users = await this.userService.getUserExecutive(query.text);
-    return res.status(HttpStatus.OK).json({
-      ok: true,
-      users
+      newAdmin
     });
   }
 
@@ -138,11 +142,4 @@ export class UserController {
     });
   }
 
-  @Get('permissions')
-  public async getPermissions(@Res() res:Response){
-    return res.status(HttpStatus.OK).json({
-      ok: true,
-      permissions
-    });
-  }
 }

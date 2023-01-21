@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post, Put, Delete, Query, Res
 import { query, Response } from 'express';
 import { Almacenes } from 'src/entities/ware_house.entity';
 import { CreateWareHOuseValidator } from 'src/validators/create-ware-house-validator';
+import { UpdateAmountContainValidator } from 'src/validators/update-amount-contain-validator';
 import { UpdateWareHouseValidator } from 'src/validators/update-ware-house-validator';
 import { WareHouseService } from './ware-house.service';
 
@@ -84,6 +85,45 @@ export class WareHouseController {
       ok: true,
       wareHouse
     }); 
+  }
+
+  @Put('editMaxMin/:id')
+  public async updateMaxMin(@Param() param, @Body() body: UpdateAmountContainValidator, @Res() res:Response){
+    const contain = await this.wareHouseService.findContainById(param.id);
+    if (!contain){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese contenido'
+      });
+    }
+    
+    if (!['min','max'].includes(body.tipo)){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        ok: false,
+        msg: 'El tipo debe tener valores como min y max'
+      });
+    }
+
+    
+    if (body.tipo === 'min'){
+      contain.minimo = body.cantidad;
+    }else{
+      contain.maximo = body.cantidad;
+    }
+    
+    const {id, ...data} = contain;
+
+    await this.wareHouseService.updateContain(id,data);
+
+    // TODO: Esto lo dejo asi para que tarde la respuesta, ya que tengo que editar un codigo en el frontend
+    setTimeout(() => {
+      return res.status(HttpStatus.OK).json({
+        ok: false,
+        contain
+      });
+    }, 10000);
+
+
   }
 
   @Put('changeFather/:id')

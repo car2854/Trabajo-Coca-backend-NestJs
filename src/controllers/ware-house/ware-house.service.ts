@@ -38,6 +38,14 @@ export class WareHouseService {
     return this.wareHouseRepository.findOne({where: {is_active: true, es_almacen_padre: true}});
   }
   
+  public findContainById = (id:number) => {
+    return this.containsRepository.findOne({where: {id}});
+  }
+
+  public updateContain = (id:number,data:any) => {
+    return this.containsRepository.update(id,data);
+  }
+
   public findContain = (wareHouse:Almacenes, id_category:number = -1, name:string = '') => {
     if (id_category > 0){
       return this.containsRepository.find({

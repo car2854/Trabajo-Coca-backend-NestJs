@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { sidebar } from '../../helpers/sidebar-dev';
 
 import * as bcrypt from 'bcrypt';
+import { LoginUserMobileValidator } from 'src/validators/login-user-mobile-validator';
 
 @Controller('auth')
 export class AuthController {
@@ -42,6 +43,38 @@ export class AuthController {
       userDB: user,
       token
     })
+  }
+
+  // /api/auth/loginMobile
+  @Post('loginMobile')
+  public async loginMobile(@Body() body: LoginUserMobileValidator, @Res() res:Response){
+
+    const user = await this.authService.findOneByEmail(body.email);
+    
+    if (!user){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        ok: false,
+        msg: 'Datos incorrectos'
+      });
+    }
+
+    const isUser = bcrypt.compareSync(body.password, user.password);
+
+    if (!isUser){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        ok: false,
+        msg: 'Datos incorrectos'
+      })
+    }
+
+    const token = await generateJwt(user.id);
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      userDB: user,
+      token
+    });
+
   }
 
   @Get('renew')

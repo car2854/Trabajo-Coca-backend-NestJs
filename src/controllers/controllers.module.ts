@@ -23,9 +23,11 @@ import { SalesModule } from './sales/sales.module';
 import { SalesController } from './sales/sales.controller';
 import { ProvisionModule } from './provision/provision.module';
 import { ProvisionController } from './provision/provision.controller';
+import { AccountingModule } from './accounting/accounting.module';
+import { RememberingOrderModule } from './remembering-order/remembering-order.module';
 
 @Module({
-  imports: [AuthModule, UserModule, WareHouseModule, CategoryModule, FinishedProductModule, UnitMeasurementModule, OlderCustomerModule, MinorCustomerModule, IngressModule, OrderModule, PublicModule, SalesModule, ProvisionModule]
+  imports: [AuthModule, UserModule, WareHouseModule, CategoryModule, FinishedProductModule, UnitMeasurementModule, OlderCustomerModule, MinorCustomerModule, IngressModule, OrderModule, PublicModule, SalesModule, ProvisionModule, AccountingModule, RememberingOrderModule]
 })
 export class ControllersModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {

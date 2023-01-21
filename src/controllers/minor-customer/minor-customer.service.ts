@@ -22,8 +22,13 @@ export class MinorCustomerService {
           is_active: true,
           contacto: ILike(`%${text}%`),
         },
-      ]
+      ],
+      relations: ['user']
     });
+  }
+
+  public save = (minorCustomer: ClientesMenores) => {
+    return this.minorCustomerRepository.save(minorCustomer);
   }
 
 }

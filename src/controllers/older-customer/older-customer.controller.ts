@@ -61,7 +61,7 @@ export class OlderCustomerController {
     newOlderCustomer.empresa = body.empresa;
     newOlderCustomer.nombre = body.nombre;
     newOlderCustomer.telefono_celular = body.telefono_celular;
-    const olderCustomer = this.olderCustomerService.save(newOlderCustomer);
+    const olderCustomer = await this.olderCustomerService.save(newOlderCustomer);
     return res.status(HttpStatus.OK).json({
       ok: true,
       olderCustomer

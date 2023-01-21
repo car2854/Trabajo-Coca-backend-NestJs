@@ -8,10 +8,18 @@ export class OrderController {
 
   @Get('getOrdersWeb')
   public async getOrdersWeb(@Res() res: Response){
-
     return res.status(HttpStatus.OK).json({
       ok: true,
       msg: 'Todo esta bien :)'
+    });
+  }
+
+  @Get('getOrdersByExecutives/:id')
+  public async getOrdersByExecutives(@Param() param ,@Res() res: Response){
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      msg: 'probando'
     });
 
   }

@@ -10,10 +10,10 @@ export class ClientesMenores{
   @Column()
   nombre: string;
 
-  @Column()
+  @Column('float')
   lat: number;
 
-  @Column()
+  @Column('float')
   lng: number;
 
   @Column()
@@ -22,8 +22,15 @@ export class ClientesMenores{
   @Column()
   contacto: string;
 
+  @Column()
+  telefono: number
+
+  @Column({type: 'timestamp', default: new Date(Date.now())})
+  ultima_vez: Date
+
   @Column({default: true})
   is_active: boolean
+
 
   @ManyToOne(() => Users, (Users) => Users.id, { cascade: true })
   @JoinColumn({ name: 'user_id' })

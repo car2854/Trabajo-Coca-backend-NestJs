@@ -22,10 +22,14 @@ export class FinishedProductService {
   }
 
   public findByCod = (cod:string) => {
-    return this.finishedProductRepository.findOne({where: {codigo: cod, is_active: true}});
+    return this.finishedProductRepository.findOne({where: {codigo: cod, is_active: true}, relations: ['unidad_medida','categoria']});
   }
 
   public save = (finishedProduct: ProductosTerminados) => {
     return this.finishedProductRepository.save(finishedProduct);
+  }
+
+  public update = (id:string, data:any) => {
+    return this.finishedProductRepository.update(id, data);
   }
 }
