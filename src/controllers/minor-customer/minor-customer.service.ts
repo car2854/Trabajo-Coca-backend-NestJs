@@ -27,8 +27,15 @@ export class MinorCustomerService {
     });
   }
 
+  public findById = (id:number) => {
+    return this.minorCustomerRepository.findOne({where: {id, is_active: true}});
+  }
+
   public save = (minorCustomer: ClientesMenores) => {
     return this.minorCustomerRepository.save(minorCustomer);
   }
 
+  public update = (id: number, data: any) => {
+    return this.minorCustomerRepository.update(id, data);
+  }
 }

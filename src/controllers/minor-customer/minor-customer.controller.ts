@@ -15,9 +15,7 @@ export class MinorCustomerController {
 
   @Get()
   public async getMinorCustomers(@Query() query,@Res() res: Response){
-
     const minorCustomers = await this.minorCustomerService.find(query.text || '');
-
     return res.status(HttpStatus.OK).json({
       ok: false,
       minorCustomers
@@ -26,10 +24,7 @@ export class MinorCustomerController {
 
   @Post()
   public async createMinorCustomer(@Req() req,@Body() body: CreateMinorCustomerValidator, @Res() res:Response){
-
     console.log(req.uid);
-
-
     const user = await this.userService.findById(req.uid);
     if (!user){
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -50,7 +45,44 @@ export class MinorCustomerController {
       ok: true,
       minorCustomer
     });
+  }
 
+  @Post(':id/cancelMinorCustomer')
+  public async cancelVisitMinorCustomer(@Param() param, @Res() res: Response){
+    const minorCustomer = await this.minorCustomerService.findById(param.id);
+    if (!minorCustomer){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese cliente'
+      });
+    }
+    const data = {
+      ultima_vez: new Date('01/01/2001')
+    };
+    await this.minorCustomerService.update(param.id, data);
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      minorCustomer
+    });
+  }
+
+  @Post(':id/visitNow')
+  public async visitMinorCustomer(@Param() param, @Res() res: Response){
+    const minorCustomer = await this.minorCustomerService.findById(param.id);
+    if (!minorCustomer){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese cliente'
+      });
+    }
+    const data = {
+      ultima_vez: new Date()
+    };
+    await this.minorCustomerService.update(param.id, data);
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      minorCustomer
+    });
   }
 
 }

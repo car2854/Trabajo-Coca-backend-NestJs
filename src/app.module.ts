@@ -35,6 +35,14 @@ import { ControllersModule } from './controllers/controllers.module';
       database: 'trabajodev',
       autoLoadEntities: true,
       synchronize: true,
+      // type: 'postgres',
+      // host: 'containers-us-west-29.railway.app',
+      // port: 6392,
+      // username: 'postgres',
+      // password: 'RWhvsONYNOU0DupzQunU',
+      // database: 'railway',
+      // autoLoadEntities: true,
+      // synchronize: true,
       
       entities: [
         UnidadDeMedida, 
