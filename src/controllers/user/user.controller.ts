@@ -111,9 +111,16 @@ export class UserController {
         msg: 'No puede cambiar su propia contraseña'
       });
     }
+    const user = await this.userService.findById(param.id);
+    if (!user){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese usuario'
+      });
+    }
     const salt = bcrypt.genSaltSync();
     const newPassword = bcrypt.hashSync(body.password, salt);
-    await this.userService.update(req.uid, {password: newPassword});
+    await this.userService.update(param.id, {password: newPassword});
     return res.status(HttpStatus.OK).json({
       ok: true,
       msg: 'Ok'
