@@ -36,7 +36,7 @@ export class IngressController {
         if (!productData) notExistProducts.push(product.idProduct);
         return productData;
       })
-    )
+    );
     
     // Si no existe un producto, me dira que productos con su supuesto COD no existen en el mensaje
     if (products.includes(null)){

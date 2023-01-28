@@ -85,4 +85,20 @@ export class MinorCustomerController {
     });
   }
 
+  @Delete(':id')
+  public async deleteMinorCustomer(@Param() param, @Res() res:Response){
+    const minorCustomer = this.minorCustomerService.findById(param.id);
+    if (!minorCustomer){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese clientes mayoristas'
+      });
+    }
+    await this.minorCustomerService.update(param.id, {is_active: false});
+    return res.status(HttpStatus.OK).json({
+      ok: false,
+      minorCustomer
+    });
+  }
+
 }
