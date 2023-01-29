@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Query, Param, Body, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Query, Param, Body, HttpStatus, Res, Req } from '@nestjs/common';
 import { Response } from 'express';
 import { Contienen } from 'src/entities/contain.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
+import { Ventas } from 'src/entities/sale.entit';
+import { VentasProductos } from 'src/entities/sale_product.entity';
 import { newList } from 'src/helpers/filter-non-existent-values';
 import { CreateSaleValidator } from 'src/validators/create-sale-validator';
 import { FinishedProductService } from '../finished_product/finished_product.service';
 import { OlderCustomerService } from '../older-customer/older-customer.service';
+import { UserService } from '../user/user.service';
 import { WareHouseService } from '../ware-house/ware-house.service';
 import { SalesService } from './sales.service';
 
@@ -16,7 +19,8 @@ export class SalesController {
     private salesService: SalesService,
     private olderCustomerService: OlderCustomerService,
     private wareHouseService: WareHouseService,
-    private finishedProductService: FinishedProductService
+    private finishedProductService: FinishedProductService,
+    private userService: UserService
   ){}
 
   @Get()
@@ -28,16 +32,28 @@ export class SalesController {
   }
 
   @Post()
-  public async createSale(@Body() body, @Res() res:Response){
+  public async createSale(@Body() body: CreateSaleValidator, @Req() req, @Res() res:Response){
 
     // CreateSaleValidator
 
-    // Buscar el cliente mayor
-    const olderCustomer = await this.olderCustomerService.findById(body.clientes_mayore_id);
+    // Buscar el cliente mayor y el usuario por req.uid
+
+    const [user, olderCustomer] = await Promise.all([
+      this.userService.findById(req.uid),
+      this.olderCustomerService.findById(body.clientes_mayore_id),
+    ]);
+
     if (!olderCustomer){
       return res.status(HttpStatus.NOT_FOUND).json({
         ok: false,
         msg: 'No existe ese cliente'
+      });
+    }
+    
+    if (!user){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese usuario'
       });
     }
 
@@ -76,10 +92,58 @@ export class SalesController {
         });
       }
 
-      // TODO: Aqui almacenar en las ventas con almacen, y lueog hacer un trigger donde descuente, pero ojo, usar transiciones y probar muchas veces
-      console.log(products);
+      // TODO: Aqui almacenar en las ventas con almacen, y Luego hacer un trigger donde descuente, pero ojo, usar transiciones y probar muchas veces
       
+      console.log('-----product---------');
+      console.log(products);
+      console.log('---------------------');
+      
+      const saleData = new Ventas();
+      saleData.cliente_mayor = olderCustomer;
+      saleData.descuento =body.descuento;
+      saleData.esta_almacen = body.esta_almacen;
+      saleData.fecha = body.fecha;
+      saleData.nota = body.nota;
+      saleData.pagado = body.pagado;
+      saleData.plazo_de_pago = body.plazo_de_pago;
+      saleData.precio_total = body.precio_total;
+      saleData.user = user;
+      const sale = await this.salesService.save(saleData);
 
+      await Promise.all(
+        body.products.map( async (saleProductBody:any) => {
+          console.log(saleProductBody);
+          const product = products.find((product:ProductosTerminados) => product.codigo === saleProductBody.cod);
+          
+
+          const saleProductData = new VentasProductos();
+          saleProductData.precio_individual = saleProductBody.price;
+          saleProductData.precio_total = saleProductBody.price * saleProductBody.amount;
+          saleProductData.cantidad = saleProductBody.amount;
+          saleProductData.producto_terminado = product;
+          saleProductData.ventas = sale;
+          const saleProduct = await this.salesService.saveSaleProduct(saleProductData);
+          console.log(saleProduct);
+          
+          // {
+          //   cod: 'P1',
+          //   nameProduct: 'Producto 1',
+          //   amount: 200,
+          //   price: 19.5,
+          //   totalPrice: 3900,
+          //   priceEditing: false
+          // }
+          // {
+          //   cod: 'P2',
+          //   nameProduct: 'Producto2',
+          //   amount: 5,
+          //   price: 50.5,
+          //   totalPrice: 252.5,
+          //   priceEditing: false
+          // }
+
+        })
+      );
 
       // console.log(body.products);
       // const contains = await Promise.all(

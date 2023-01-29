@@ -12,7 +12,10 @@ export class CreateSaleValidator{
   descuento: number;
 
   @IsNotEmpty() @IsBoolean()
-  pagado: boolean
+  pagado: boolean;
+
+  @IsNotEmpty() @IsNumber()
+  precio_total: number;
 
   @IsOptional()
   plazo_de_pago: Date;

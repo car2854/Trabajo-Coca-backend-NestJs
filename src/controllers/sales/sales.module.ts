@@ -9,10 +9,14 @@ import { WareHouseService } from '../ware-house/ware-house.service';
 import { Contienen } from 'src/entities/contain.entity';
 import { FinishedProductService } from '../finished_product/finished_product.service';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
+import { Ventas } from 'src/entities/sale.entit';
+import { Users } from 'src/entities/users.entity';
+import { UserService } from '../user/user.service';
+import { VentasProductos } from 'src/entities/sale_product.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados])],
-  providers: [SalesService, OlderCustomerService, WareHouseService, FinishedProductService],
+  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados, Ventas, Users, VentasProductos])],
+  providers: [SalesService, OlderCustomerService, WareHouseService, FinishedProductService, UserService],
   controllers: [SalesController]
 })
 export class SalesModule {}

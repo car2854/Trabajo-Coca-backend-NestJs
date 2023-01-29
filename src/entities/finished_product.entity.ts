@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn, OneToMany } from 
 import { Categorias } from './category.entity';
 import { Contienen } from './contain.entity';
 import { Disposicion } from './disposition.entity';
+import { VentasProductos } from './sale_product.entity';
 import { UnidadDeMedida } from './unit_of_measuremet.entity';
 
 @Entity()
@@ -30,5 +31,8 @@ export class ProductosTerminados{
   contienen: Contienen[];
 
   @OneToMany(() => Disposicion, (Disposicion) => Disposicion.productos_terminado)
-  disposiciones: Disposicion[]
+  disposiciones: Disposicion[];
+
+  @OneToMany(() => VentasProductos, (VentasProductos) => VentasProductos.producto_terminado)
+  ventas_productos: VentasProductos[]
 }

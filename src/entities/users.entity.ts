@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Disposicion } from './disposition.entity';
+import { Ventas } from './sale.entit';
 
 @Entity()
 export class Users{
@@ -23,4 +24,7 @@ export class Users{
 
   @OneToMany(() => Disposicion, (Disposicion) => Disposicion.user_id)
   disposiciones: Disposicion[]
+
+  @OneToMany(() => Ventas, (Ventas) => Ventas.user)
+  ventas: Ventas[]
 }

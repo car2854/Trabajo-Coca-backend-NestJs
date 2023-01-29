@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Ventas } from './sale.entit';
 
 @Entity()
 export class ClientesMayores{
@@ -22,5 +23,8 @@ export class ClientesMayores{
   telefono_celular: string;
 
   @Column({default: true})
-  is_active: boolean
+  is_active: boolean;
+
+  @OneToMany(() => Ventas, (Ventas) => Ventas.cliente_mayor)
+  ventas: ClientesMayores[]
 }

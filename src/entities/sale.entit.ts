@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ClientesMayores } from './older_customer.entity';
+import { VentasProductos } from './sale_product.entity';
 import { Users } from './users.entity';
 
 @Entity()
@@ -12,7 +13,7 @@ export class Ventas{
   fecha: Date;
 
   @Column()
-  esta_almcen: boolean;
+  esta_almacen: boolean;
 
   @Column({type: 'float' ,default: '0'})
   descuento: number;
@@ -35,12 +36,15 @@ export class Ventas{
   @Column({default: true})
   is_active: boolean;
 
-  @ManyToOne(() => Users, (Users) => Users.id, {cascade: true})
+  @ManyToOne(() => Users, (Users) => Users.ventas, {cascade: true})
   @JoinColumn({name: 'user_id'})
-  user_id: Users;
+  user: Users;
   
-  @ManyToOne(() => ClientesMayores, (ClientesMayores) => ClientesMayores.id, {cascade: true})
+  @ManyToOne(() => ClientesMayores, (ClientesMayores) => ClientesMayores.ventas, {cascade: true})
   @JoinColumn({name: 'cliente_mayor_id'})
-  cliente_mayor_id: ClientesMayores;
+  cliente_mayor: ClientesMayores;
+
+  @OneToMany(() => VentasProductos, (VentasProductos) => VentasProductos.ventas)
+  ventas_productos: VentasProductos[]
 
 }

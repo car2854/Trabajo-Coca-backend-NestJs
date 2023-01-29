@@ -14,12 +14,15 @@ export class VentasProductos{
   @Column({type: 'float'})
   precio_total: number;
 
-  @ManyToOne(() => ProductosTerminados, (ProductosTerminados) => ProductosTerminados.codigo, {cascade: true})
-  @JoinColumn({name: 'producto_terminado_codigo'})
-  producto_terminado_codigo: ProductosTerminados;
+  @Column({type: 'integer'})
+  cantidad: number;
 
-  @ManyToOne(() => Ventas, (Ventas) => Ventas.id, {cascade: true})
+  @ManyToOne(() => ProductosTerminados, (ProductosTerminados) => ProductosTerminados.ventas_productos, {cascade: true})
+  @JoinColumn({name: 'producto_terminado_codigo'})
+  producto_terminado: ProductosTerminados;
+
+  @ManyToOne(() => Ventas, (Ventas) => Ventas.ventas_productos, {cascade: true})
   @JoinColumn({name: 'ventas_id'})
-  ventas_id: Ventas;
+  ventas: Ventas;
 
 }
