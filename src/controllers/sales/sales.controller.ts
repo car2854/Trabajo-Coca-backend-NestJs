@@ -38,12 +38,20 @@ export class SalesController {
   }
 
   @Get('getDetailsSale/:id')
-  public async getDetails(@Res() res: Response){
+  public async getDetails(@Param() param ,@Res() res: Response){
 
+    const sale = await this.salesService.findOneById(param.id);
 
-    return res.status(HttpStatus.NOT_FOUND).json({
-      ok: false,
-      msg: 'Proabdmo :)'
+    if (!sale){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe esa venta'
+      });
+    }
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      sale
     });
   }
 

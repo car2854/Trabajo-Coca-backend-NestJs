@@ -35,6 +35,23 @@ export class SalesService {
     return this.salesRepository.save(sale);
   }
 
+  public findOneById = (id:number) => {
+    return this.salesRepository.findOne({where: {id: id}, relations: {
+      'cliente_mayor' : true,
+      'user': true,
+      'almacen': true,
+      'ventas_productos': {
+        'producto_terminado': {
+          'categoria': true
+        }
+      }
+    }});
+  }
+
+  
+
+
+
   // VentasProductos
   public saveSaleProduct = (saleProduct: VentasProductos) => {
     return this.saleProductRepository.save(saleProduct);
