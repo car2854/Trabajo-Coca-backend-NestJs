@@ -39,7 +39,7 @@ export class ProvisionController {
     const [finishedProduct, user, wareHouse] = await Promise.all([
       this.finishedProductService.findByCod(body.producto_terminado_cod),
       this.userService.findById(body.user_id),
-      this.wareHouseService.findOneById(body.almacene_id)
+      this.wareHouseService.findOneById(body.almacen_id)
     ]);
     if (!finishedProduct){
       return res.status(HttpStatus.NOT_FOUND).json({

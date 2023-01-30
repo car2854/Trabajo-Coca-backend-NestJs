@@ -27,31 +27,9 @@ export class CreateSaleValidator{
   clientes_mayore_id: number;
 
   @IsOptional() @IsNumber()
-  almacene_id: number;
+  almacen_id: number;
 
   @IsNotEmpty()
   products: []
-  // {
-  //   precio_total: 284.5,
-
-  //   products: [
-  //     {
-  //       cod: 'P1',
-  //       nameProduct: 'Producto 1',
-  //       amount: 12,
-  //       price: 19.5,
-  //       totalPrice: 234,
-  //       priceEditing: false
-  //     },
-  //     {
-  //       cod: 'P2',
-  //       nameProduct: 'Producto2',
-  //       amount: 1,
-  //       price: 50.5,
-  //       totalPrice: 50.5,
-  //       priceEditing: false
-  //     }
-  //   ]
-  // }
 
 }

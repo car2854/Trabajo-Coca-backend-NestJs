@@ -2,7 +2,7 @@ import { IsNotEmpty, IsOptional, IsNumber, IsRFC3339 } from 'class-validator';
 
 export class CreateIngressValidator{
   @IsNotEmpty() @IsNumber()
-  almacene_id: number;
+  almacen_id: number;
   @IsNotEmpty()
   fecha: Date;
   @IsOptional()

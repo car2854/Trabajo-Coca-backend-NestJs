@@ -20,7 +20,7 @@ export class IngressController {
   @Post()
   public async createIngress(@Body() body: CreateIngressValidator, @Res() res: Response){
 
-    const wareHouse = await this.wareHouseService.findOneById(body.almacene_id);
+    const wareHouse = await this.wareHouseService.findOneById(body.almacen_id);
     if (!wareHouse){
       return res.status(HttpStatus.NOT_FOUND).json({
         ok: false,

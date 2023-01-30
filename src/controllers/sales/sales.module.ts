@@ -13,10 +13,12 @@ import { Ventas } from 'src/entities/sale.entit';
 import { Users } from 'src/entities/users.entity';
 import { UserService } from '../user/user.service';
 import { VentasProductos } from 'src/entities/sale_product.entity';
+import { SaleProductSubcriber } from 'src/events/SaleProductSubcriber';
+import { DetalleNoAlmacen } from 'src/entities/detail_no_ware_house.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados, Ventas, Users, VentasProductos])],
-  providers: [SalesService, OlderCustomerService, WareHouseService, FinishedProductService, UserService],
+  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados, Ventas, Users, VentasProductos, Contienen, DetalleNoAlmacen])],
+  providers: [SalesService, OlderCustomerService, WareHouseService, FinishedProductService, UserService, SaleProductSubcriber],
   controllers: [SalesController]
 })
 export class SalesModule {}

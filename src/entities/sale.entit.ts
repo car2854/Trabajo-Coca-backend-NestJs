@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMan
 import { ClientesMayores } from './older_customer.entity';
 import { VentasProductos } from './sale_product.entity';
 import { Users } from './users.entity';
+import { Almacenes } from './ware_house.entity';
 
 @Entity()
 export class Ventas{
@@ -43,6 +44,10 @@ export class Ventas{
   @ManyToOne(() => ClientesMayores, (ClientesMayores) => ClientesMayores.ventas, {cascade: true})
   @JoinColumn({name: 'cliente_mayor_id'})
   cliente_mayor: ClientesMayores;
+
+  @ManyToOne(() => Almacenes, (Almacenes) => Almacenes.ventas, {cascade: true})
+  @JoinColumn({name: 'almacen_id'})
+  almacen: Almacenes
 
   @OneToMany(() => VentasProductos, (VentasProductos) => VentasProductos.ventas)
   ventas_productos: VentasProductos[]

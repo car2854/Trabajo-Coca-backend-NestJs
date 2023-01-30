@@ -12,6 +12,6 @@ export class CreateProvisionValidator{
   cantidad: number;
 
   @IsNotEmpty() @IsNumber()
-  almacene_id: number;
+  almacen_id: number;
   
 }
