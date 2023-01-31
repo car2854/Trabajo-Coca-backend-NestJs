@@ -40,6 +40,7 @@ export class SalesService {
       'cliente_mayor' : true,
       'user': true,
       'almacen': true,
+      'detalles_no_almacen': true,
       'ventas_productos': {
         'producto_terminado': {
           'categoria': true

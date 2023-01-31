@@ -41,7 +41,8 @@ export class SalesController {
   public async getDetails(@Param() param ,@Res() res: Response){
 
     const sale = await this.salesService.findOneById(param.id);
-
+    console.log(sale);
+    
     if (!sale){
       return res.status(HttpStatus.NOT_FOUND).json({
         ok: false,
@@ -188,7 +189,7 @@ export class SalesController {
           detailNoWareHouse.nombre = productDataBody.nameProduct;
           detailNoWareHouse.precio_individual = productDataBody.price;
           detailNoWareHouse.precio_total = productDataBody.price * productDataBody.amount;
-          detailNoWareHouse.venta_id = sale;
+          detailNoWareHouse.venta = sale;
 
           await this.salesService.saveDetailNoWareHouse(detailNoWareHouse);
 

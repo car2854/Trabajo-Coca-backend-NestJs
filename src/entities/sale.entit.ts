@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { DetalleNoAlmacen } from './detail_no_ware_house.entity';
 import { ClientesMayores } from './older_customer.entity';
 import { VentasProductos } from './sale_product.entity';
 import { Users } from './users.entity';
@@ -52,4 +53,6 @@ export class Ventas{
   @OneToMany(() => VentasProductos, (VentasProductos) => VentasProductos.ventas)
   ventas_productos: VentasProductos[]
 
+  @OneToMany(() => DetalleNoAlmacen, (DetalleNoAlmacen) => DetalleNoAlmacen.venta)
+  detalles_no_almacen: DetalleNoAlmacen[]
 }

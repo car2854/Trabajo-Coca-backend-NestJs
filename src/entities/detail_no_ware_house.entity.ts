@@ -19,8 +19,8 @@ export class DetalleNoAlmacen{
   @Column({type: 'float'})
   precio_total: number;
 
-  @ManyToOne(() => Ventas, (Ventas) => Ventas.id, {cascade: true})
+  @ManyToOne(() => Ventas, (Ventas) => Ventas.detalles_no_almacen, {cascade: true})
   @JoinColumn({name: 'venta_id'})
-  venta_id: Ventas;
+  venta: Ventas;
 
 }
