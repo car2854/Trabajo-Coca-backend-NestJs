@@ -13,7 +13,7 @@ export class DetallesPedidos{
   @Column({type: 'float'})
   precio: number;
 
-  @ManyToOne(() => Pedidos, (Pedidos) => Pedidos.id, { cascade: true })
+  @ManyToOne(() => Pedidos, (Pedidos) => Pedidos.detalles_pedidos, { cascade: true })
   @JoinColumn({ name: 'pedido_id' })
   pedido: Pedidos;
 

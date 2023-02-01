@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
 import { Contienen } from './contain.entity';
 import { Ingresos } from './entry.entity';
+import { Pedidos } from './order.entity';
 import { Ventas } from './sale.entit';
 
 @Entity()
@@ -28,5 +29,8 @@ export class Almacenes{
   ingresos: Ingresos[];
 
   @OneToMany(() => Ventas, (Ventas) => Ventas.almacen)
-  ventas: Ventas[]
+  ventas: Ventas[];
+
+  @OneToMany(() => Pedidos, (Pedidos) => Pedidos.almacen)
+  pedidos: Pedidos[];
 }
