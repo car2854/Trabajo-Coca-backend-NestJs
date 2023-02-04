@@ -17,7 +17,7 @@ export class DetallesPedidos{
   @JoinColumn({ name: 'pedido_id' })
   pedido: Pedidos;
 
-  @ManyToOne(() => ProductosTerminados, (ProductosTerminados) => ProductosTerminados.codigo, { cascade: true })
+  @ManyToOne(() => ProductosTerminados, (ProductosTerminados) => ProductosTerminados.codigo, { cascade: true, nullable: false })
   @JoinColumn({ name: 'producto_terminado_codigo' })
   producto_terminado: ProductosTerminados;
 }

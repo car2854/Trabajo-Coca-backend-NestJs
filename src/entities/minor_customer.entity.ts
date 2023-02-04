@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { NotasPedidos } from './note_orders_entity';
 import { Users } from './users.entity';
 
 @Entity()
@@ -34,9 +35,10 @@ export class ClientesMenores{
   @Column({default: true})
   is_active: boolean;
 
-
-  @ManyToOne(() => Users, (Users) => Users.id, { cascade: true })
+  @ManyToOne(() => Users, (Users) => Users.clientes_menores, { cascade: true })
   @JoinColumn({ name: 'user_id' })
   user: Users;
 
+  @OneToMany(() => NotasPedidos, (NotasPedidos) => NotasPedidos.cliente_menor)
+  notas_pedidos: NotasPedidos[]
 }

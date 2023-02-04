@@ -4,6 +4,7 @@ import { DetallesPedidos } from 'src/entities/detail_order.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
 import { Pedidos } from 'src/entities/order.entity';
 import { CreateOrderNoExecutiveValidator } from 'src/validators/create-order-no-executive-validator';
+import { UpdateOrderValidator } from 'src/validators/update-order-validator';
 import { OrderService } from './order.service';
 
 @Controller('order')
@@ -15,9 +16,12 @@ export class OrderController {
 
   @Get('getOrdersWeb')
   public async getOrdersWeb(@Res() res: Response){
+
+    const orders = await this.orderService.findOrder();
+
     return res.status(HttpStatus.OK).json({
       ok: true,
-      msg: 'Todo esta bien :)'
+      orders
     });
   }
 
@@ -63,7 +67,7 @@ export class OrderController {
 
     const orderData = new Pedidos();
     orderData.cliente_menor = minorCustomer;
-    orderData.user_id = user;
+    orderData.user = user;
     const order = await this.orderService.saveOrder(orderData);
 
     await Promise.all([
@@ -75,15 +79,66 @@ export class OrderController {
         detailOrderData.producto_terminado = finishedProducts.find((finishedProductData:ProductosTerminados) => {
           return finishedProductData.codigo === productBody.codigo
         });
-        await this.orderService.saveDetailOrder(detailOrderData);
+        const detail = await this.orderService.saveDetailOrder(detailOrderData);
+        console.log(detail);
+        
       })
     ]);    
+
+
 
     return res.status(HttpStatus.OK).json({
       ok: true,
       orderData
     });
     
+  }
+
+  @Put('sendResponseOrder/:id')
+  public async updateOrder(@Req() req, @Body() body: UpdateOrderValidator, @Res() res: Response){
+
+    const order = await this.orderService.findOrderById(req.id);
+
+    if (!order){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese pedido'
+      });
+    }
+
+    if (order.estado != 'Sin-asignar'){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        ok: false,
+        msg: `Este pedido ya a sido ${order.estado}`
+      });
+    }
+
+    // TODO: <------- Si quiere aceptarlo
+    
+    if (body.estado){
+      const wareHouse = await this.orderService.findByIdWareHouse(body.almacen);
+
+      if (!wareHouse){
+        return res.status(HttpStatus.NOT_FOUND).json({
+          ok: false,
+          msg: 'No existe ese almacen'
+        });
+      }
+
+      order.estado = 'Aceptado';
+      order.almacen = wareHouse;
+      
+    }else{    // <------- Si quiere denegarlo
+      order.estado = 'Denegado';
+      order.razon_cancelacion = body.razonCancelacion;
+      await this.orderService.updateOrder(order.id, order);
+
+    }
+
+    return res.status(HttpStatus.NOT_FOUND).json({
+      ok: true,
+      order
+    });
   }
 
 

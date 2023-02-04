@@ -26,9 +26,9 @@ export class Pedidos{
   @JoinColumn({ name: 'cliente_menor_id' })
   cliente_menor: ClientesMenores;
 
-  @ManyToOne(() => Users, (Users) => Users.id, { cascade: true })
+  @ManyToOne(() => Users, (Users) => Users.pedidos, { cascade: true })
   @JoinColumn({ name: 'user_id' })
-  user_id: Users;
+  user: Users;
 
   @OneToMany(() => DetallesPedidos, (DetallesPedidos) => DetallesPedidos.pedido)
   detalles_pedidos: DetallesPedidos[]

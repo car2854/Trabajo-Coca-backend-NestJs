@@ -5,6 +5,7 @@ import { ProductosTerminados } from 'src/entities/finished_product.entity';
 import { ClientesMenores } from 'src/entities/minor_customer.entity';
 import { Pedidos } from 'src/entities/order.entity';
 import { Users } from 'src/entities/users.entity';
+import { Almacenes } from 'src/entities/ware_house.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -25,26 +26,57 @@ export class OrderService {
 
     @InjectRepository(ProductosTerminados)
     private finishedProductRepository: Repository<ProductosTerminados>,
+    
+    @InjectRepository(Almacenes)
+    private wareHouseRepository: Repository<Almacenes>,
 
   ){}
 
-  public findByIdMinorCustomer(id:number){
-    return this.minorCustomerRepository.findOne({where :{id, is_active: true}});
+  public findOrder(){
+    return this.orderRepository.find({where: {}, relations: {
+      'cliente_menor': true, 
+      'user': true, 
+      'detalles_pedidos' : {
+        'producto_terminado': true
+      }
+    }});
   }
 
-  public saveOrder(order: Pedidos){
+  // Pedidos
+  public saveOrder = (order: Pedidos) => {
     return this.orderRepository.save(order);
   }
 
-  public saveDetailOrder(detailOrder: DetallesPedidos){
+  public findOrderById = (id:number) => {
+    return this.orderRepository.findOne({where: {id}});
+  }
+
+  public updateOrder = (id:number, data:any) => {
+    return this.orderRepository.update(id, data);
+  }
+
+  // Detalle pedidos
+  public saveDetailOrder = (detailOrder: DetallesPedidos) => {
     return this.detailOrderRepository.save(detailOrder);
   }
 
-  public findByIdUser = (id:number) => {
-    return this.userRepository.findOne({where:{id, is_active: true}});
+  // Clientes menores
+  public findByIdMinorCustomer = (id:number) => {
+    return this.minorCustomerRepository.findOne({where :{id, is_active: true}});
   }
 
+  // Users
+  public findByIdUser = (id:number) => {
+    return this.userRepository.findOne({where: {id, is_active: true}});
+  }
+
+  // Productos terminados
   public findByCodFinishedProduct = (cod:string) => {
-    return this.finishedProductRepository.find({where: {codigo: cod, is_active: true}});
+    return this.finishedProductRepository.findOne({where: {codigo: cod, is_active: true}});
+  }
+
+  // Almacenes
+  public findByIdWareHouse = (id:number) => {
+    return this.wareHouseRepository.findOne({where: {id, is_active: true}});
   }
 }

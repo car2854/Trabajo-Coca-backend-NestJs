@@ -22,6 +22,7 @@ import { UnidadDeMedida } from './entities/unit_of_measuremet.entity';
 import { Users } from './entities/users.entity';
 import { Almacenes } from './entities/ware_house.entity';
 import { ControllersModule } from './controllers/controllers.module';
+import { NotasPedidos } from './entities/note_orders_entity';
 
 @Module({
   imports: [
@@ -64,7 +65,8 @@ import { ControllersModule } from './controllers/controllers.module';
         IngresosGastos,
         Disposicion,
         HistorialDisposicion,
-        VentasAnuladas
+        VentasAnuladas,
+        NotasPedidos
       ],
 
     }),
@@ -88,7 +90,8 @@ import { ControllersModule } from './controllers/controllers.module';
       IngresosGastos,
       Disposicion,
       HistorialDisposicion,
-      VentasAnuladas
+      VentasAnuladas,
+      NotasPedidos
     ]),
     ControllersModule,
   ],
