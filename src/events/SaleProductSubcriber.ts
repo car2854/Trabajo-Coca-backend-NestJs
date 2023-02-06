@@ -1,7 +1,7 @@
 import { SalesService } from "src/controllers/sales/sales.service";
 import { Contienen } from "src/entities/contain.entity";
 import { VentasProductos } from "src/entities/sale_product.entity";
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, TransactionCommitEvent } from "typeorm";
+import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, TransactionCommitEvent, UpdateEvent } from "typeorm";
 
 @EventSubscriber()
 export class SaleProductSubcriber implements EntitySubscriberInterface<VentasProductos>{

@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Contienen } from 'src/entities/contain.entity';
 import { DetallesPedidos } from 'src/entities/detail_order.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
 import { ClientesMenores } from 'src/entities/minor_customer.entity';
 import { Pedidos } from 'src/entities/order.entity';
 import { Users } from 'src/entities/users.entity';
 import { Almacenes } from 'src/entities/ware_house.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
@@ -29,26 +30,50 @@ export class OrderService {
     
     @InjectRepository(Almacenes)
     private wareHouseRepository: Repository<Almacenes>,
+    
+    @InjectRepository(Contienen)
+    private containRepository: Repository<Contienen>,
 
   ){}
 
-  public findOrder(){
-    return this.orderRepository.find({where: {}, relations: {
-      'cliente_menor': true, 
-      'user': true, 
-      'detalles_pedidos' : {
-        'producto_terminado': true
-      }
+  // Pedidos
+  public findOrder = (type: string = '', clientName: string = '') => {
+    return this.orderRepository.find({
+      where: {
+        estado: ILike(`%${type}%`),
+        cliente_menor: {
+          nombre: ILike(`%${clientName}%`),
+        }
+      }, 
+      relations: {
+        'cliente_menor': true, 
+        'user': true, 
+        'detalles_pedidos' : {
+          'producto_terminado': true
+        }
     }});
   }
 
-  // Pedidos
-  public saveOrder = (order: Pedidos) => {
-    return this.orderRepository.save(order);
+  public findOrderById = (id:number) => {
+    return this.orderRepository.findOne({
+      where: {
+        id: id
+      }, 
+      relations: {
+        'cliente_menor': true, 
+        'user': true, 
+        'detalles_pedidos' : {
+          'producto_terminado': {
+            'categoria': true,
+            'unidad_medida': true
+          }
+        },
+        'almacen': true
+    }});
   }
 
-  public findOrderById = (id:number) => {
-    return this.orderRepository.findOne({where: {id}});
+  public saveOrder = (order: Pedidos) => {
+    return this.orderRepository.save(order);
   }
 
   public updateOrder = (id:number, data:any) => {
@@ -78,5 +103,14 @@ export class OrderService {
   // Almacenes
   public findByIdWareHouse = (id:number) => {
     return this.wareHouseRepository.findOne({where: {id, is_active: true}});
+  }
+
+  // Contienen
+  public findContainByFinishedProductAndWareHouse = (finishedProduct: ProductosTerminados, wareHouse: Almacenes) => {
+    return this.containRepository.findOne({where: {producto_terminado: finishedProduct, almacen: wareHouse}, relations: {'producto_terminado': true}});
+  }
+
+  public updateContain = (id:number, data:any) => {
+    return this.containRepository.update(id, data);
   }
 }

@@ -9,7 +9,7 @@ export class Pedidos{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default: 'Sin-asignar'})
+  @Column({default: 'Sin asignar'})
   estado: string;
 
   @Column({type: 'timestamp', default: new Date(Date.now())})

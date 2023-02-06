@@ -8,9 +8,10 @@ import { DetallesPedidos } from 'src/entities/detail_order.entity';
 import { Users } from 'src/entities/users.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
 import { Almacenes } from 'src/entities/ware_house.entity';
+import { Contienen } from 'src/entities/contain.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClientesMenores, Pedidos, DetallesPedidos, Users, ProductosTerminados, Almacenes])],
+  imports: [TypeOrmModule.forFeature([ClientesMenores, Pedidos, DetallesPedidos, Users, ProductosTerminados, Almacenes, Contienen])],
   providers: [OrderService],
   controllers: [OrderController]
 })
