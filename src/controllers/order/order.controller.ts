@@ -32,6 +32,30 @@ export class OrderController {
     });
   }
 
+  @Get('getDetailsOrderMinorCustomer/:id')
+  public async getDetailOrderMinorCusomer(@Query() query, @Param() param ,@Res() res: Response){
+
+    console.log(query);
+    const {beginDate, endDate, userName} = query;
+
+    const minorCustomer = await this.orderService.findByIdMinorCustomer(param.id);
+
+    if (!minorCustomer){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese cliente'
+      })
+    }
+
+    const orders = await this.orderService.findOrderByMinorCustomer(minorCustomer, userName ?? '');
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      minorCustomer,
+      orders
+    })
+  }
+
   @Get('getOrdersByExecutives/:id')
   public async getOrdersByExecutives(@Param() param ,@Res() res: Response){
 

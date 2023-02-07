@@ -54,6 +54,22 @@ export class OrderService {
     }});
   }
 
+  public findOrderByMinorCustomer = (minorCustomer: ClientesMenores, userName: string = '') => {
+    return this.orderRepository.find({
+      where: {
+        'cliente_menor': minorCustomer,
+        'user': {
+          'nombre': ILike(`%${userName}%`)
+        }
+      },
+      relations: {
+        'cliente_menor': true,
+        'user': true,
+        'detalles_pedidos': true
+      }
+    })
+  }
+
   public findOrderById = (id:number) => {
     return this.orderRepository.findOne({
       where: {
@@ -87,7 +103,12 @@ export class OrderService {
 
   // Clientes menores
   public findByIdMinorCustomer = (id:number) => {
-    return this.minorCustomerRepository.findOne({where :{id, is_active: true}});
+    return this.minorCustomerRepository.findOne({
+      where :{
+        id, 
+        is_active: true
+      }
+    });
   }
 
   // Users

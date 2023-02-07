@@ -23,7 +23,10 @@ export class MinorCustomerService {
           contacto: ILike(`%${text}%`),
         },
       ],
-      relations: ['user']
+      relations: {
+        'user': true,
+        'notas_pedidos': true
+      }
     });
   }
 
