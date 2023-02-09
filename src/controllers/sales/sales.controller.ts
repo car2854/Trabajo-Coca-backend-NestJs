@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Query, Param, Body, HttpStatus, Res, Req } from '@nestjs/common';
 import { Response } from 'express';
+import { HistorialContabilidad } from 'src/entities/accounting_history.entity';
 import { Contienen } from 'src/entities/contain.entity';
 import { DetalleNoAlmacen } from 'src/entities/detail_no_ware_house.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
@@ -164,6 +165,16 @@ export class SalesController {
           msg: error.message
         });
       } finally {
+
+        const accountingHistoryData = new HistorialContabilidad();
+        accountingHistoryData.almacen = sale.almacen;
+        accountingHistoryData.detalle = sale.nota;
+        accountingHistoryData.fecha = sale.fecha;
+        accountingHistoryData.ingreso = sale.precio_total;
+        accountingHistoryData.venta = sale.id;
+    
+        await this.salesService.saveAccountingHistory(accountingHistoryData);
+
         await queryRunner.release();
       }
       
@@ -197,7 +208,6 @@ export class SalesController {
       ]);
       
     }
-
 
     return res.status(HttpStatus.OK).json({
       ok: false,

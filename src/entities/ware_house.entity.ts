@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 't
 import { HistorialContabilidad } from './accounting_history.entity';
 import { Contienen } from './contain.entity';
 import { Ingresos } from './entry.entity';
+import { IngresosGastos } from './income_expense.entity';
 import { Pedidos } from './order.entity';
 import { Ventas } from './sale.entit';
 
@@ -37,4 +38,7 @@ export class Almacenes{
 
   @OneToMany(() => HistorialContabilidad, (HistorialContabilidad) => HistorialContabilidad.almacen)
   historial_contabilidad: HistorialContabilidad;
+
+  @OneToMany(() => IngresosGastos, (IngresosGastos) => IngresosGastos.almacen)
+  ingresos_gastos: IngresosGastos[];
 }

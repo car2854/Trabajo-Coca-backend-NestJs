@@ -19,9 +19,9 @@ export class IngresosGastos{
   @Column()
   tipo: string;
 
-  @ManyToOne(() => Almacenes, (Almacenes) => Almacenes.id, {cascade: true})
+  @ManyToOne(() => Almacenes, (Almacenes) => Almacenes.ingresos_gastos, {cascade: true})
   @JoinColumn({name: 'almacen_id'})
-  almacen_id: Almacenes;
+  almacen: Almacenes;
 
   @OneToOne(() => HistorialContabilidad, (HistorialContabilidad) => HistorialContabilidad.ingreso_gasto)
   historial_contabilidad: HistorialContabilidad;

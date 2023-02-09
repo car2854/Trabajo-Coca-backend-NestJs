@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { HistorialContabilidad } from 'src/entities/accounting_history.entity';
 import { Contienen } from 'src/entities/contain.entity';
 import { DetalleNoAlmacen } from 'src/entities/detail_no_ware_house.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
@@ -22,7 +23,10 @@ export class SalesService {
     private containRepository: Repository<Contienen>,
 
     @InjectRepository(DetalleNoAlmacen)
-    private detailNoWareHouseRepository: Repository<DetalleNoAlmacen>
+    private detailNoWareHouseRepository: Repository<DetalleNoAlmacen>,
+
+    @InjectRepository(HistorialContabilidad)
+    private accountingHistoryRepository: Repository<HistorialContabilidad>,
   ){}
 
   // Ventas
@@ -72,4 +76,8 @@ export class SalesService {
     return this.detailNoWareHouseRepository.save(detailNoWareHouse);
   }
 
+  // historial contabilidad
+  public saveAccountingHistory = (accountingHistory: HistorialContabilidad) => {
+    return this.accountingHistoryRepository.save(accountingHistory);
+  }
 }

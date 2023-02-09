@@ -15,9 +15,10 @@ import { UserService } from '../user/user.service';
 import { VentasProductos } from 'src/entities/sale_product.entity';
 import { SaleProductSubcriber } from 'src/events/SaleProductSubcriber';
 import { DetalleNoAlmacen } from 'src/entities/detail_no_ware_house.entity';
+import { HistorialContabilidad } from 'src/entities/accounting_history.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados, Ventas, Users, VentasProductos, Contienen, DetalleNoAlmacen])],
+  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados, Ventas, Users, VentasProductos, Contienen, DetalleNoAlmacen, HistorialContabilidad])],
   providers: [SalesService, OlderCustomerService, WareHouseService, FinishedProductService, UserService, SaleProductSubcriber],
   controllers: [SalesController]
 })

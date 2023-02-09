@@ -19,7 +19,16 @@ export class AccountingService {
   public findAccountingByWareHouse = (wareHouse: Almacenes) => {
     return this.accountingRepository.find({
       where: {
-        'almacen': wareHouse
+        'almacen': wareHouse,
+        is_active: true
+      },
+      order: {
+        fecha: 'ASC'
+      },
+      relations:{
+        'almacen': true,
+        'ingreso_gasto': true,
+        'venta': true
       }
     });
   }
