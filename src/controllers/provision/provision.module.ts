@@ -13,7 +13,7 @@ import { Almacenes } from 'src/entities/ware_house.entity';
 import { HistorialDisposicion } from 'src/entities/disposition_history.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Disposicion, Users, ProductosTerminados, Contienen, Almacenes, HistorialDisposicion])],
+  imports: [TypeOrmModule.forFeature([Disposicion, Users, ProductosTerminados, Contienen, Almacenes, HistorialDisposicion, Almacenes])],
   controllers: [ProvisionController],
   providers: [ProvisionService, UserService, FinishedProductService, WareHouseService]
 })

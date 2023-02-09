@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { HistorialContabilidad } from './accounting_history.entity';
 import { DetalleNoAlmacen } from './detail_no_ware_house.entity';
 import { ClientesMayores } from './older_customer.entity';
 import { VentasProductos } from './sale_product.entity';
@@ -54,5 +55,8 @@ export class Ventas{
   ventas_productos: VentasProductos[]
 
   @OneToMany(() => DetalleNoAlmacen, (DetalleNoAlmacen) => DetalleNoAlmacen.venta)
-  detalles_no_almacen: DetalleNoAlmacen[]
+  detalles_no_almacen: DetalleNoAlmacen[];
+
+  @OneToOne(() => HistorialContabilidad, (HistorialContabilidad) => HistorialContabilidad.venta)
+  historial_contabilidad: HistorialContabilidad;
 }

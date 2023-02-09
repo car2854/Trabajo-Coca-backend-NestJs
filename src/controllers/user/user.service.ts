@@ -54,7 +54,7 @@ export class UserService {
           permisos: ILike('%userMobileEfecutivo%'), 
           is_active: true,
           email: ILike(`%${text}%`)
-        },
+        }
       ]
     });
   }

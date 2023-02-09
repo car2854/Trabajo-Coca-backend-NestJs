@@ -21,6 +21,9 @@ export class ProvisionService {
     @InjectRepository(HistorialDisposicion)
     private historyRepository: Repository<HistorialDisposicion>,
 
+    @InjectRepository(Almacenes)
+    private wareHouseRepository: Repository<Almacenes>,
+
   ){}
 
   // Disposicion
@@ -29,6 +32,17 @@ export class ProvisionService {
       {where: {user_id: user},
       relations: ['productos_terminado']
     });
+  }
+
+  public findById = (id:number) => {
+    return this.dispositionRepository.findOne({
+      where: {
+        id
+      },
+      relations: {
+        'productos_terminado': true
+      }
+    })
   }
 
   public findByUserProduct = (user: Users, finishedProduct: ProductosTerminados) => {
@@ -47,6 +61,10 @@ export class ProvisionService {
     return this.dispositionRepository.update(id, {cantidad: amount});
   }
 
+  public updateProvision = (id:number, data:any) => {
+    return this.dispositionRepository.update(id, data);
+  }
+
 
   // Contienen
   public findContainProduct = (finishedProduct: ProductosTerminados, wareHouse: Almacenes) => {
@@ -54,5 +72,17 @@ export class ProvisionService {
   }
   public toDiscountProductContain = (id:number, amount: number) => {
     return this.containRepository.update(id, {cantidad: amount})
+  }
+
+  public saveContain = (contain: Contienen) => {
+    return this.containRepository.save(contain);
+  }
+
+  public updateContain = (id:number, data) => {
+    return this.containRepository.update(id, data);
+  }
+  // Almacen
+  public findWareHouseById = (id:number) => {
+    return this.wareHouseRepository.findOne({where: {id, is_active: true}});
   }
 }

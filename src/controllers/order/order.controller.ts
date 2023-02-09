@@ -59,9 +59,20 @@ export class OrderController {
   @Get('getOrdersByExecutives/:id')
   public async getOrdersByExecutives(@Param() param ,@Res() res: Response){
 
+    const user = await this.orderService.findByIdUser(param.id);
+
+    if (!user){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese usuario'
+      });
+    }
+
+    const orders = await this.orderService.findOrderByUserExecutiveBackpack(user);
+
     return res.status(HttpStatus.OK).json({
       ok: true,
-      msg: 'probando'
+      orders
     });
     
   }

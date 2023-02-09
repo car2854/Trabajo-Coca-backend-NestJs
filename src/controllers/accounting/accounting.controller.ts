@@ -11,11 +11,22 @@ export class AccountingController {
   ){}
   
   @Get(':id')
-  public async getAccountingTheWareHouse(@Res() res: Response){
+  public async getAccountingTheWareHouse(@Param() param, @Res() res: Response){
+
+    const wareHouse = await this.accountingService.findWareHouseById(param.id);
+
+    if (!wareHouse){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese almacen'
+      });
+    }
+
+    const accounting = await this.accountingService.findAccountingByWareHouse(wareHouse);
 
     return res.status(HttpStatus.OK).json({
       ok: true,
-      msg: 'ok :)'
+      msg: accounting
     });
   }
 

@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Put, Delete, Query, Param, Body, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
+import { Contienen } from 'src/entities/contain.entity';
 import { Disposicion } from 'src/entities/disposition.entity';
 import { HistorialDisposicion } from 'src/entities/disposition_history.entity';
 import { CreateProvisionValidator } from 'src/validators/create-provision-validator';
+import { RemoveProductExecutiveValidator } from 'src/validators/remove-product-executive-validator';
 import { FinishedProductService } from '../finished_product/finished_product.service';
 import { UserService } from '../user/user.service';
 import { WareHouseService } from '../ware-house/ware-house.service';
@@ -111,6 +113,63 @@ export class ProvisionController {
     return res.status(HttpStatus.OK).json({
       ok: true,
       provision: provisionUpdate
+    })
+  }
+
+  @Post('removeProductExecutive/:id')
+  public async removeProductExecutive(@Body() body: RemoveProductExecutiveValidator, @Param() param, @Res() res: Response){
+
+    console.log(body);
+    let [wareHouse, provision] = await Promise.all([
+      this.provisionService.findWareHouseById(body.idAlmacen),
+      this.provisionService.findById(param.id)
+    ]);
+
+    if (!provision){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe esa disposicion'
+      });
+    }
+
+    if (!wareHouse){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese almacen'
+      });
+    }
+    
+    provision.cantidad = provision.cantidad - body.cantidad;
+    if (provision.cantidad < 0){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        ok: false,
+        msg: 'No hay suficiente stock agregado en ese usuario'
+      });
+    }
+    
+    const contain = await this.provisionService.findContainProduct(provision.productos_terminado, wareHouse);
+
+    // Si existe ese producto en ese almacen
+    if (contain){
+      
+      contain.cantidad = contain.cantidad + body.cantidad;
+      await this.provisionService.updateContain(contain.id, contain);
+
+    }else{    // Si no existe ese producto en ese almacen
+      
+      const containData = new Contienen();
+      containData.almacen = wareHouse;
+      containData.cantidad = body.cantidad;
+      containData.producto_terminado = provision.productos_terminado;
+      await this.provisionService.saveContain(containData);
+      
+    }
+    
+    await this.provisionService.updateProvision(provision.id, provision);
+
+    return res.status(HttpStatus.OK).json({
+      ok: false,
+      provision
     })
   }
 

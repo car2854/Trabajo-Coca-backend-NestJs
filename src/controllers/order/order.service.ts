@@ -70,6 +70,20 @@ export class OrderService {
     })
   }
 
+  public findOrderByUserExecutiveBackpack = (user: Users) => {
+    return this.orderRepository.find({
+      where: {
+        'user': user,
+        'estado': 'Mochila'
+      },
+      relations: {
+        'cliente_menor': true,
+        'user': true,
+        'detalles_pedidos': true
+      }
+    })
+  }
+
   public findOrderById = (id:number) => {
     return this.orderRepository.findOne({
       where: {

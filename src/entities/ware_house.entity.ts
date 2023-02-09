@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
+import { HistorialContabilidad } from './accounting_history.entity';
 import { Contienen } from './contain.entity';
 import { Ingresos } from './entry.entity';
 import { Pedidos } from './order.entity';
@@ -33,4 +34,7 @@ export class Almacenes{
 
   @OneToMany(() => Pedidos, (Pedidos) => Pedidos.almacen)
   pedidos: Pedidos[];
+
+  @OneToMany(() => HistorialContabilidad, (HistorialContabilidad) => HistorialContabilidad.almacen)
+  historial_contabilidad: HistorialContabilidad;
 }
