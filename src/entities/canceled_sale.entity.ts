@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { Ventas } from './sale.entit';
 
 @Entity()
@@ -15,8 +15,8 @@ export class VentasAnuladas{
   @Column({type: 'timestamp', default: new Date(Date.now())})
   fecha_anulada: Date;
 
-  @ManyToOne(() => Ventas, (Ventas) => Ventas.id, {cascade: true})
+  @OneToOne(() => Ventas, (Ventas) => Ventas.venta_anulada, {cascade: true, nullable: true})
   @JoinColumn({name: 'venta_id'})
-  venta_id: Ventas
+  venta: Ventas
   
 }

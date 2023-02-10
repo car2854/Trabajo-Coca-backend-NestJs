@@ -1,12 +1,14 @@
 import { Controller, Get, Post, Put, Delete, Query, Param, Body, HttpStatus, Res, Req } from '@nestjs/common';
-import { Response } from 'express';
+import e, { Response } from 'express';
 import { HistorialContabilidad } from 'src/entities/accounting_history.entity';
+import { VentasAnuladas } from 'src/entities/canceled_sale.entity';
 import { Contienen } from 'src/entities/contain.entity';
 import { DetalleNoAlmacen } from 'src/entities/detail_no_ware_house.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
 import { Ventas } from 'src/entities/sale.entit';
 import { VentasProductos } from 'src/entities/sale_product.entity';
 import { newList } from 'src/helpers/filter-non-existent-values';
+import { CreateCancelesSaleValidator } from 'src/validators/create-canceles-sale-validator';
 import { CreateSaleValidator } from 'src/validators/create-sale-validator';
 import { DataSource } from 'typeorm';
 import { FinishedProductService } from '../finished_product/finished_product.service';
@@ -35,6 +37,17 @@ export class SalesController {
     return res.status(HttpStatus.OK).json({
       ok: true,
       sales
+    });
+  }
+
+  @Get(':id')
+  public async getSale(@Param() param ,@Res() res: Response){
+
+    const sale = await this.salesService.findOneById(param.id);
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      sale
     });
   }
 
@@ -213,5 +226,81 @@ export class SalesController {
       ok: false,
       sales: sale
     });
+  }
+
+  @Put('cancelSale/:id')
+  public async cancelSale(@Req() req, @Param() param, @Body() body: CreateCancelesSaleValidator, @Res() res: Response){
+
+    const sale = await this.salesService.findOneById(param.id);    
+
+    if (!sale){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe esa venta'
+      });
+    }
+
+    if (!sale.is_active){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'Esa venta ya a sido anulada'
+      });
+    }
+
+    if (req.uid != sale.user.id){
+      return res.status(HttpStatus.NOT_ACCEPTABLE).json({
+        ok: false,
+        msg: 'Usted no a creado esta venta'
+      });
+    }
+
+    sale.is_active = false;
+    await this.salesService.delete(param.id);
+
+    const cancelesSaleData = new VentasAnuladas();
+    cancelesSaleData.descripcion = body.descripcion;
+    cancelesSaleData.items_devueltos = body.items_devueltos;
+    cancelesSaleData.venta = sale;
+    await this.salesService.saveCancelesSale(cancelesSaleData);
+
+    if (sale.esta_almacen){
+
+      if (sale.historial_contabilidad){
+        await this.salesService.deleteAccountingHistory(sale.historial_contabilidad.id);
+      }
+
+      if (body.items_devueltos){
+        
+        const finishedProducts = sale.ventas_productos.map((saleProduct : VentasProductos) => saleProduct.producto_terminado);
+        const wareHouse = sale.almacen;
+    
+        let contains = await Promise.all(
+          finishedProducts.map((finishedProduct: ProductosTerminados) => this.salesService.findContain(wareHouse, finishedProduct))
+        )
+    
+        contains = contains.map((contain: Contienen) => {
+          const saleProduct = sale.ventas_productos.find((saleProductData: VentasProductos) => {
+            if (saleProductData.producto_terminado.codigo === contain.producto_terminado.codigo) return saleProductData;
+          });
+          contain.cantidad = contain.cantidad + saleProduct.cantidad;
+          return contain;
+        });
+        
+        await Promise.all(
+          contains.map((contain: Contienen) => {
+            const {producto_terminado, ...data} = contain;
+            return this.salesService.updateContain(contain.id, data)
+          })
+        );
+        
+      }
+
+    }
+
+    return res.status(HttpStatus.OK).json({
+      ok: false,
+      sale
+    })
+
   }
 }

@@ -8,7 +8,7 @@ export class HistorialContabilidad{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({type: 'text'})
+  @Column({type: 'text', nullable: true})
   detalle: string;
 
   @Column({type: 'float', nullable: true})

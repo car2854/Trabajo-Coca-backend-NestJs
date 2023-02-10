@@ -16,9 +16,10 @@ import { VentasProductos } from 'src/entities/sale_product.entity';
 import { SaleProductSubcriber } from 'src/events/SaleProductSubcriber';
 import { DetalleNoAlmacen } from 'src/entities/detail_no_ware_house.entity';
 import { HistorialContabilidad } from 'src/entities/accounting_history.entity';
+import { VentasAnuladas } from 'src/entities/canceled_sale.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados, Ventas, Users, VentasProductos, Contienen, DetalleNoAlmacen, HistorialContabilidad])],
+  imports: [TypeOrmModule.forFeature([ClientesMayores, Almacenes, Contienen, ProductosTerminados, Ventas, Users, VentasProductos, Contienen, DetalleNoAlmacen, HistorialContabilidad, VentasAnuladas])],
   providers: [SalesService, OlderCustomerService, WareHouseService, FinishedProductService, UserService, SaleProductSubcriber],
   controllers: [SalesController]
 })

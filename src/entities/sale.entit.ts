@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { HistorialContabilidad } from './accounting_history.entity';
+import { VentasAnuladas } from './canceled_sale.entity';
 import { DetalleNoAlmacen } from './detail_no_ware_house.entity';
 import { ClientesMayores } from './older_customer.entity';
 import { VentasProductos } from './sale_product.entity';
@@ -59,4 +60,7 @@ export class Ventas{
 
   @OneToOne(() => HistorialContabilidad, (HistorialContabilidad) => HistorialContabilidad.venta)
   historial_contabilidad: HistorialContabilidad;
+
+  @OneToOne(() => VentasAnuladas, (VentasAnuladas) => VentasAnuladas.venta)
+  venta_anulada: VentasAnuladas
 }

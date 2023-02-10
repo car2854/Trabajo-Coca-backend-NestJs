@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HistorialContabilidad } from 'src/entities/accounting_history.entity';
+import { VentasAnuladas } from 'src/entities/canceled_sale.entity';
 import { Contienen } from 'src/entities/contain.entity';
 import { DetalleNoAlmacen } from 'src/entities/detail_no_ware_house.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
@@ -27,12 +28,20 @@ export class SalesService {
 
     @InjectRepository(HistorialContabilidad)
     private accountingHistoryRepository: Repository<HistorialContabilidad>,
+    
+    @InjectRepository(VentasAnuladas)
+    private cancelesSaleRepository: Repository<VentasAnuladas>,
   ){}
 
   // Ventas
 
   public find = () => {
-    return this.salesRepository.find({relations: ['user', 'cliente_mayor', 'almacen']});
+    return this.salesRepository.find({
+      relations: ['user', 'cliente_mayor', 'almacen'],
+      order: {
+        fecha: 'DESC'
+      }
+    });
   }
 
   public save = (sale: Ventas) => {
@@ -40,7 +49,7 @@ export class SalesService {
   }
 
   public findOneById = (id:number) => {
-    return this.salesRepository.findOne({where: {id: id}, relations: {
+    return this.salesRepository.findOne({where: {id}, relations: {
       'cliente_mayor' : true,
       'user': true,
       'almacen': true,
@@ -49,12 +58,20 @@ export class SalesService {
         'producto_terminado': {
           'categoria': true
         }
-      }
+      },
+      'historial_contabilidad': true
     }});
   }
 
-  
+  public delete = (id:number) => {
+    return this.salesRepository.update(id, {is_active: false});
+  }
 
+
+  // Ventas anuladas
+  public saveCancelesSale = (cancelesSale: VentasAnuladas) => {
+    return this.cancelesSaleRepository.save(cancelesSale);
+  }
 
 
   // VentasProductos
@@ -64,7 +81,12 @@ export class SalesService {
 
   // Contienen
   public findContain = (wareHouse: Almacenes, finishedProduct: ProductosTerminados) => {
-    return this.containRepository.findOne({where: {almacen: wareHouse, producto_terminado: finishedProduct}});
+    return this.containRepository.findOne({
+      where: {almacen: wareHouse, producto_terminado: finishedProduct},
+      relations: {
+        'producto_terminado': true
+      }
+    });
   }
 
   public updateContain = (id:number, data:any) => {
@@ -79,5 +101,17 @@ export class SalesService {
   // historial contabilidad
   public saveAccountingHistory = (accountingHistory: HistorialContabilidad) => {
     return this.accountingHistoryRepository.save(accountingHistory);
+  }
+
+  public findBySaleAccountingHistory = (sale: Ventas) => {
+    return this.accountingHistoryRepository.findOne({
+      where: {
+        venta: sale
+      },
+    });
+  }
+
+  public deleteAccountingHistory = (id:number) => {
+    return this.accountingHistoryRepository.delete(id)
   }
 }
