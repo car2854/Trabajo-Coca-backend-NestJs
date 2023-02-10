@@ -59,7 +59,8 @@ export class SalesService {
           'categoria': true
         }
       },
-      'historial_contabilidad': true
+      'historial_contabilidad': true,
+      'venta_anulada': true
     }});
   }
 
