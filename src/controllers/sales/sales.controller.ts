@@ -30,18 +30,25 @@ export class SalesController {
   ){}
 
   @Get()
-  public async getSales(@Res() res:Response){
+  public async getSales( @Query() query, @Res() res:Response){
 
-    const sales = await this.salesService.find();
+    const { page } = query;
+
+    const [sales, length] = await Promise.all([
+      this.salesService.find((parseInt(page) * 10)-10),
+      this.salesService.getLength()
+    ]);
+
 
     return res.status(HttpStatus.OK).json({
       ok: true,
-      sales
+      sales,
+      length
     });
   }
 
   @Get(':id')
-  public async getSale(@Param() param ,@Res() res: Response){
+  public async getSale(@Param() param, @Res() res: Response){
 
     const sale = await this.salesService.findOneById(param.id);
 

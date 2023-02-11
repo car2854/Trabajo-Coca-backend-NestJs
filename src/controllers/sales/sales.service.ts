@@ -35,14 +35,25 @@ export class SalesService {
 
   // Ventas
 
-  public find = () => {
+  public getLength = () => {
+    return this.salesRepository.count()
+  }
+
+  public find = (skip:number) => {
+
+    console.log(skip);
+    
+
     return this.salesRepository.find({
       relations: ['user', 'cliente_mayor', 'almacen'],
       order: {
         fecha: 'DESC'
-      }
+      },
+      take: 10,
+      skip
     });
   }
+
 
   public save = (sale: Ventas) => {
     return this.salesRepository.save(sale);
