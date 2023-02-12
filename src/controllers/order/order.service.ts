@@ -7,7 +7,7 @@ import { ClientesMenores } from 'src/entities/minor_customer.entity';
 import { Pedidos } from 'src/entities/order.entity';
 import { Users } from 'src/entities/users.entity';
 import { Almacenes } from 'src/entities/ware_house.entity';
-import { ILike, Repository } from 'typeorm';
+import { Between, ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
@@ -54,18 +54,19 @@ export class OrderService {
     }});
   }
 
-  public findOrderByMinorCustomer = (minorCustomer: ClientesMenores, userName: string = '') => {
+  public findOrderByMinorCustomer = (minorCustomer: ClientesMenores, from: Date, to: Date, userName: string = '') => {
     return this.orderRepository.find({
       where: {
-        'cliente_menor': minorCustomer,
-        'user': {
+        cliente_menor: minorCustomer,
+        user: {
           'nombre': ILike(`%${userName}%`)
-        }
+        },
+        fecha: Between(from,to)
       },
       relations: {
-        'cliente_menor': true,
-        'user': true,
-        'detalles_pedidos': true
+        cliente_menor: true,
+        user: true,
+        detalles_pedidos: true
       }
     })
   }
@@ -73,13 +74,13 @@ export class OrderService {
   public findOrderByUserExecutiveBackpack = (user: Users) => {
     return this.orderRepository.find({
       where: {
-        'user': user,
-        'estado': 'Mochila'
+        user: user,
+        estado: 'Mochila'
       },
       relations: {
-        'cliente_menor': true,
-        'user': true,
-        'detalles_pedidos': true
+        cliente_menor: true,
+        user: true,
+        detalles_pedidos: true
       }
     })
   }

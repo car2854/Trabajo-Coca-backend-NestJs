@@ -35,8 +35,10 @@ export class OrderController {
   @Get('getDetailsOrderMinorCustomer/:id')
   public async getDetailOrderMinorCusomer(@Query() query, @Param() param ,@Res() res: Response){
 
-    console.log(query);
-    const {beginDate, endDate, userName} = query;
+    const {userName} = query;
+
+    let initDate = (query.beginDate) ? new Date(Date.parse(query.beginDate)) : new Date('01-12-2000'); 
+    let endDate = (query.endDate) ? new Date(new Date(Date.parse(query.endDate)).getTime() + 60 * 60 * 24 * 1000) : new Date('01-12-2500'); 
 
     const minorCustomer = await this.orderService.findByIdMinorCustomer(param.id);
 
@@ -47,7 +49,7 @@ export class OrderController {
       })
     }
 
-    const orders = await this.orderService.findOrderByMinorCustomer(minorCustomer, userName ?? '');
+    const orders = await this.orderService.findOrderByMinorCustomer(minorCustomer, initDate, endDate, userName ?? '');
 
     return res.status(HttpStatus.OK).json({
       ok: true,

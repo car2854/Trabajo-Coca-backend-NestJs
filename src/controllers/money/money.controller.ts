@@ -38,7 +38,7 @@ export class MoneyController {
     const accountingHistoryData = new HistorialContabilidad();
     accountingHistoryData.almacen = wareHouse;
     accountingHistoryData.detalle = incomeExpense.detalle;
-    accountingHistoryData.fecha = accountingHistoryData.fecha;
+    accountingHistoryData.fecha = body.fecha;
     accountingHistoryData.ingreso_gasto = incomeExpense;
     if (body.tipo === 'ingreso'){
       accountingHistoryData.ingreso = incomeExpense.monto;
@@ -46,7 +46,7 @@ export class MoneyController {
       accountingHistoryData.egreso = incomeExpense.monto;
     }
 
-    await this.moneyService.saveAccountingHistory(accountingHistoryData);
+    const accountingHistory = await this.moneyService.saveAccountingHistory(accountingHistoryData);
 
     const accountingHistories = await this.moneyService.findAccountingHistory();
 

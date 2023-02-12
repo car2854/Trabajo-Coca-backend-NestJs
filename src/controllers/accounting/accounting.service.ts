@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HistorialContabilidad } from 'src/entities/accounting_history.entity';
 import { Almacenes } from 'src/entities/ware_house.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 @Injectable()
 export class AccountingService {
@@ -16,11 +16,12 @@ export class AccountingService {
   ){}
 
   // Historial contabilidad
-  public findAccountingByWareHouse = (wareHouse: Almacenes) => {
+  public findAccountingByWareHouse = (wareHouse: Almacenes, from: Date, to:Date) => {
     return this.accountingRepository.find({
       where: {
         'almacen': wareHouse,
-        is_active: true
+        is_active: true,
+        fecha: Between(from, to)
       },
       order: {
         fecha: 'ASC'
@@ -38,7 +39,7 @@ export class AccountingService {
     return this.wareHouseRepository.findOne({
       where: {
         id,
-        is_active: true
+        is_active: true,
       }
     });
   }
