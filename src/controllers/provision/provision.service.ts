@@ -29,7 +29,7 @@ export class ProvisionService {
   // Disposicion
   public find = (user: Users) => {
     return this.dispositionRepository.find(
-      {where: {user_id: user},
+      {where: {user: user},
       relations: ['productos_terminado']
     });
   }
@@ -46,7 +46,7 @@ export class ProvisionService {
   }
 
   public findByUserProduct = (user: Users, finishedProduct: ProductosTerminados) => {
-    return this.dispositionRepository.findOne({where: {user_id: user, productos_terminado: finishedProduct}});
+    return this.dispositionRepository.findOne({where: {user: user, productos_terminado: finishedProduct}});
   }
 
   public saveProvition = (disposition: Disposicion) => {

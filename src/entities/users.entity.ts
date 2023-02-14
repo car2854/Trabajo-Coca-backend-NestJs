@@ -27,7 +27,7 @@ export class Users{
   @OneToMany(() => ClientesMenores, (ClientesMenores) => ClientesMenores.user)
   clientes_menores: ClientesMenores[];
 
-  @OneToMany(() => Disposicion, (Disposicion) => Disposicion.user_id)
+  @OneToMany(() => Disposicion, (Disposicion) => Disposicion.user)
   disposiciones: Disposicion[]
 
   @OneToMany(() => Ventas, (Ventas) => Ventas.user)

@@ -99,7 +99,7 @@ export class ProvisionController {
       const newDisposition = new Disposicion();
       newDisposition.cantidad = body.cantidad;
       newDisposition.productos_terminado = finishedProduct;
-      newDisposition.user_id = user;
+      newDisposition.user = user;
       provisionUpdate = await this.provisionService.saveProvition(newDisposition);
 
       const newHistoryDisposition = new HistorialDisposicion();

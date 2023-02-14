@@ -13,7 +13,7 @@ export class Disposicion{
   
   @ManyToOne(() => (Users), (Users) => Users.disposiciones, {cascade: true})
   @JoinColumn({name: 'user_id'})
-  user_id: Users;
+  user: Users;
 
   @ManyToOne(() => ProductosTerminados, (ProductosTerminados) => ProductosTerminados.disposiciones, {cascade: true})
   @JoinColumn({name: 'producto_terminado_id'})

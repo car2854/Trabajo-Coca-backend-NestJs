@@ -35,8 +35,6 @@ export class SaleProductSubcriber implements EntitySubscriberInterface<VentasPro
 
     await event.manager.update(Contienen, {id : containeProduct.id}, {cantidad : containeProduct.cantidad - event.entity.cantidad});
 
-    console.log('hola');
-    
 
   }
 

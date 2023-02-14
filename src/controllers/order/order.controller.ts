@@ -2,8 +2,11 @@ import { Controller, Get, Req, Post, Put, Delete, Query, Param, Res, Body, HttpS
 import e, { Response } from 'express';
 import { Contienen } from 'src/entities/contain.entity';
 import { DetallesPedidos } from 'src/entities/detail_order.entity';
+import { Disposicion } from 'src/entities/disposition.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
 import { Pedidos } from 'src/entities/order.entity';
+import { Almacenes } from 'src/entities/ware_house.entity';
+import { CreateOrderEjecutivoValidator } from 'src/validators/create-order-ejecutivo-validator';
 import { CreateOrderNoExecutiveValidator } from 'src/validators/create-order-no-executive-validator';
 import { UpdateOrderValidator } from 'src/validators/update-order-validator';
 import { DataSource } from 'typeorm';
@@ -16,6 +19,28 @@ export class OrderController {
     private orderService: OrderService,
     private dataSource: DataSource
   ){}
+
+  @Get()
+  public async getOrders(@Req() req, @Res() res: Response){
+
+    const user = await this.orderService.findByIdUser(req.uid);
+    if (!user){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese usuario'
+      });
+    }
+
+    const orders = await this.orderService.findOrderByUserExecutive(user);
+
+    console.log(orders);
+    
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      orders
+    });
+  }
 
   @Get('getOrdersWeb')
   public async getOrdersWeb(@Query() query, @Res() res: Response){
@@ -30,6 +55,27 @@ export class OrderController {
       ok: true,
       orders
     });
+  }
+
+  @Get(':id')
+  public async getOrder(@Param() param ,@Res() res: Response){
+
+    const detailsOrder = await this.orderService.findOrderById(param.id);
+
+    if (!detailsOrder){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese pedido'
+      });
+    }
+
+    console.log(detailsOrder.detalles_pedidos);
+    
+
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      detailOrder: detailsOrder.detalles_pedidos
+    })
   }
 
   @Get('getDetailsOrderMinorCustomer/:id')
@@ -148,6 +194,113 @@ export class OrderController {
       orderData
     });
     
+  }
+
+  @Post('createOrderEjecutivos')
+  public async createOrderEjecutivos(@Req() req, @Body() body: CreateOrderEjecutivoValidator, @Res() res: Response){
+
+    const productJson = JSON.parse(body.product);
+
+    
+    const [minorCustomer, user] = await Promise.all([
+      this.orderService.findByIdMinorCustomer(body.clientes_menore_id),
+      this.orderService.findByIdUser(req.uid)
+    ]);
+    
+    if (!minorCustomer){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese cliente'
+      });
+    }
+
+    if (!user){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'No existe ese usuario'
+      });
+    }
+    
+    
+    const finishedProducts = await Promise.all(
+      productJson.map((pJson: any) => this.orderService.findByCodFinishedProduct(pJson.codigo))
+    )
+      
+    
+    if (finishedProducts.includes(null)){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: 'Hay productos que no existe'
+      })
+    }
+    
+
+    let errorProvisionNotFound = '';
+    const provisions = await Promise.all(
+      productJson.map(async (mJson: any) => {
+        const provision = await this.orderService.findProvisionByUserFinishedProduct(user, finishedProducts.find((finishedProduct: ProductosTerminados) => finishedProduct.codigo === mJson.codigo));
+        if (!provision) errorProvisionNotFound = errorProvisionNotFound + mJson.codigo + ' '
+        return provision;
+      })
+    )
+
+    // Si hay datos en el mensaje de Error, no existe ese producto para ese usuario
+    if (errorProvisionNotFound != ''){
+      return res.status(HttpStatus.NOT_FOUND).json({
+        ok: false,
+        msg: `Los productos: ${errorProvisionNotFound}No existen en su mochila`
+      })
+    }
+    
+    const orderData = new Pedidos();
+    orderData.cliente_menor = minorCustomer;
+    orderData.estado = 'Mochila';
+    orderData.user = user;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      
+      const order = await queryRunner.manager.save(orderData);
+
+      let errorProvisionAmountError = '';
+      await Promise.all(
+        productJson.map( async (dataJson: any) => {
+          const detailOrderData = new DetallesPedidos();
+          detailOrderData.cantidad = dataJson.amount;
+          detailOrderData.pedido = order;
+          detailOrderData.precio = dataJson.precio;
+          detailOrderData.producto_terminado = finishedProducts.find((finishedProduct: ProductosTerminados) => finishedProduct.codigo === dataJson.codigo);
+          const detailOrder = await queryRunner.manager.save(detailOrderData);
+
+          const provision = provisions.find((provision: Disposicion) => provision.productos_terminado.codigo === detailOrder.producto_terminado.codigo);
+          provision.cantidad = provision.cantidad - detailOrder.cantidad;
+          if (provision.cantidad < 0) errorProvisionAmountError = errorProvisionAmountError + detailOrder.producto_terminado.codigo + ' ';
+          await queryRunner.manager.save(provision);
+        })
+      );
+      
+      if (errorProvisionAmountError != ''){
+        throw new Error(`No hay suficiente cantidad de los productos ${errorProvisionAmountError}en tu mochila`);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        ok: false,
+        msg: error.message
+      });
+    } finally {
+      await queryRunner.release();
+    }
+
+    return res.status(HttpStatus.OK).json({
+      ok: false,
+      order: orderData
+    })
   }
 
   @Put('sendResponseOrder/:id')

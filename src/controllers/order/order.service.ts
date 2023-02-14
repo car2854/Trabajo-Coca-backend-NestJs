@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Contienen } from 'src/entities/contain.entity';
 import { DetallesPedidos } from 'src/entities/detail_order.entity';
+import { Disposicion } from 'src/entities/disposition.entity';
 import { ProductosTerminados } from 'src/entities/finished_product.entity';
 import { ClientesMenores } from 'src/entities/minor_customer.entity';
 import { Pedidos } from 'src/entities/order.entity';
@@ -33,6 +34,9 @@ export class OrderService {
     
     @InjectRepository(Contienen)
     private containRepository: Repository<Contienen>,
+
+    @InjectRepository(Disposicion)
+    private provisionRepository: Repository<Disposicion>,
 
   ){}
 
@@ -82,6 +86,26 @@ export class OrderService {
         user: true,
         detalles_pedidos: true
       }
+    })
+  }
+
+  public findOrderByUserExecutive = (user: Users) => {
+    return this.orderRepository.find({
+      where: {
+        user: user,
+        estado: 'Mochila'
+      },
+      relations: {
+        cliente_menor: {
+          'user': true
+        },
+        user: true,
+        detalles_pedidos: true
+      },
+      order: {
+        'fecha': 'DESC'
+      },
+      take: 5
     })
   }
 
@@ -148,5 +172,22 @@ export class OrderService {
 
   public updateContain = (id:number, data:any) => {
     return this.containRepository.update(id, data);
+  }
+
+  // Disposicion
+  public findProvisionByUserFinishedProduct = (user: Users, finishedProduct: ProductosTerminados) => {
+    return this.provisionRepository.findOne({
+      where: {
+        user,
+        productos_terminado: finishedProduct
+      },
+      relations: {
+        'productos_terminado': true
+      }
+    })
+  }
+
+  public updateProvision = (id: number, data:any) => {
+    return this.provisionRepository.update(id, data);
   }
 }
