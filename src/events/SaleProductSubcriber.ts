@@ -19,21 +19,21 @@ export class SaleProductSubcriber implements EntitySubscriberInterface<VentasPro
 
   async afterInsert(event: InsertEvent<VentasProductos>): Promise<any> {
     
-    const containeProduct = await this.salesService.findContain(event.entity.ventas.almacen, event.entity.producto_terminado);
+    // const containeProduct = await this.salesService.findContain(event.entity.ventas.almacen, event.entity.producto_terminado);
 
-    if (!containeProduct){
+    // if (!containeProduct){
 
-      let error = new Error();
-      error.message = `No existe el producto ${event.entity.producto_terminado.codigo} en este almacen`;
-      throw error;
-    }
+    //   let error = new Error();
+    //   error.message = `No existe el producto ${event.entity.producto_terminado.codigo} en este almacen`;
+    //   throw error;
+    // }
     
-    if (containeProduct.cantidad - event.entity.cantidad < 0){
+    // if (containeProduct.cantidad - event.entity.cantidad < 0){
       
-      throw new Error(`No hay suficiente Stock del producto ${event.entity.producto_terminado.codigo} en el almacen`);
-    }
+    //   throw new Error(`No hay suficiente Stock del producto ${event.entity.producto_terminado.codigo} en el almacen`);
+    // }
 
-    await event.manager.update(Contienen, {id : containeProduct.id}, {cantidad : containeProduct.cantidad - event.entity.cantidad});
+    // await event.manager.update(Contienen, {id : containeProduct.id}, {cantidad : containeProduct.cantidad - event.entity.cantidad});
 
 
   }

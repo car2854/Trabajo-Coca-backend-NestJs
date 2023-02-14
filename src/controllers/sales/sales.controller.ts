@@ -78,8 +78,8 @@ export class SalesController {
   }
 
   @Post()
-  public async createSale(@Body() body: CreateSaleValidator, @Req() req, @Res() res:Response){
-    
+  public async createSale(@Body() body, @Req() req, @Res() res:Response){
+
     const [user, olderCustomer] = await Promise.all([
       this.userService.findById(req.uid),
       this.olderCustomerService.findById(body.clientes_mayore_id),
@@ -157,6 +157,12 @@ export class SalesController {
         sale = await queryRunner.manager.save(saleData);
         // await queryRunner.manager.save(sale);
 
+        let msgErrorNotContain = '';
+        let msgErrorAmountContain = '';
+        
+        console.log(body.products);
+
+
         await Promise.all(
           body.products.map( async (saleProductBody:any) => {
             
@@ -173,8 +179,27 @@ export class SalesController {
             await queryRunner.manager.save(saleProductData);
             // Para descontar el stock, esta en el evento de ventas_productos
 
+            const contain = await this.salesService.findContain(wareHouse, product);
+
+            if (contain){
+              contain.cantidad = contain.cantidad - saleProductData.cantidad;
+              if (contain.cantidad < 0) msgErrorAmountContain = msgErrorAmountContain + product.codigo + ' ';
+              await queryRunner.manager.update(Contienen, contain.id, {cantidad: contain.cantidad});
+            }else{
+              msgErrorNotContain = msgErrorNotContain + product.codigo + ' ';
+            }
+
+
           })
         );
+        
+        if (msgErrorNotContain != ''){
+          throw new Error(`No existe los productos: ${msgErrorNotContain} en este almacen`);
+        }
+
+        if (msgErrorAmountContain != ''){
+          throw new Error(`No hay suficiente Stock del producto ${msgErrorAmountContain} en este almacen`);
+        }
 
         await queryRunner.commitTransaction();
       } catch (error) {
@@ -185,7 +210,8 @@ export class SalesController {
           msg: error.message
         });
       } finally {
-
+        
+        await queryRunner.release();
         const accountingHistoryData = new HistorialContabilidad();
         accountingHistoryData.almacen = sale.almacen;
         accountingHistoryData.detalle = sale.nota;
@@ -195,7 +221,6 @@ export class SalesController {
     
         await this.salesService.saveAccountingHistory(accountingHistoryData);
 
-        await queryRunner.release();
       }
       
     }else{ //Si no esta en el almacen, hacer esto

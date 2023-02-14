@@ -72,7 +72,7 @@ export class OrderService {
         user: true,
         detalles_pedidos: true
       }
-    })
+    });
   }
 
   public findOrderByUserExecutiveBackpack = (user: Users) => {
@@ -86,7 +86,7 @@ export class OrderService {
         user: true,
         detalles_pedidos: true
       }
-    })
+    });
   }
 
   public findOrderByUserExecutive = (user: Users) => {
@@ -105,8 +105,8 @@ export class OrderService {
       order: {
         'fecha': 'DESC'
       },
-      take: 5
-    })
+      take: 20
+    });
   }
 
   public findOrderById = (id:number) => {
@@ -184,7 +184,7 @@ export class OrderService {
       relations: {
         'productos_terminado': true
       }
-    })
+    });
   }
 
   public updateProvision = (id: number, data:any) => {
